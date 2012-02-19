@@ -1,0 +1,128 @@
+- var checkDisabled = user.id!=internship.student_user_id;
+- var checkSponsorRequested = internship.sponsor_requested_on;
+- var checkAdvisorRequested = internship.advisor_requested_on;
+  
+p
+div#links
+  a(href='./list') list
+  p 
+  
+h2= title
+
+div#messages
+  p= error
+
+div#internship
+  form#internshipForm(method="post")
+    input(name="editIntern[id]", value=internship.id, type="hidden")
+    table
+      tr
+        td
+          input(type="submit", value="save", disabled=checkDisabled)
+          p
+        td
+          = info
+          p
+      tr
+        td
+          label status:
+        td
+          input(name='display_status', value=internship.status, disabled="disabled")
+      tr
+        td
+          label first\ name:
+        td
+          input(name='display_first_name', value=user.first_name, disabled="disabled")
+      tr
+        td
+          label last\ name:
+        td
+          input(name='display_last_name', value=user.last_name, disabled="disabled")
+      tr
+        td
+          label university\ student\ number:
+        td
+          input(name='editIntern[university_student_number]', value=internship.university_student_number, disabled=checkDisabled)
+      tr
+        td
+          label quarter\ \\\ year:
+        td
+          select(name='editIntern[quarter]', style="width: 50;")
+            - var a = ['winter', 'spring', 'summer', 'fall']
+            each v in a
+              option(value=v, selected=v==internship.quarter, disabled=checkDisabled)=v
+          \ \ \\\ \ \ 
+          select(name='editIntern[year]', style="width: 42%;")
+            - var a = ['2012', '2013', '2014', '2015']
+            each v in a
+              option(value=v, selected=v==internship.year, disabled=checkDisabled)=v
+      tr
+        td
+          label number\ of\ credits:
+        td
+          select(name='editIntern[number_of_credits]', style="width: 100%;")
+            - var a = ['5', '10']
+            each v in a
+              option(value=v, selected=v==internship.number_of_credits, disabled=checkDisabled)=v
+      tr
+        td
+          label sponsor\ company:
+        td
+          input(name='editIntern[sponsor_company]', value=internship.sponsor_company, disabled=checkDisabled)
+      tr
+        td
+          label sponsor\ address:
+        td
+          input(name='editIntern[sponsor_address]', value=internship.sponsor_address, disabled=checkDisabled)
+      tr
+        td
+          label project\ title:
+        td
+          input(name='editIntern[project_title]', value=internship.project_title, disabled=checkDisabled)
+          
+    table
+      tr
+        td
+          label project\ description:
+      tr
+        td
+          textarea(name='editIntern[project_description]', disabled=checkDisabled, rows=10, cols=45)= internship.project_description 
+
+div#requests
+  h2 participants
+  p
+  form#requestSponsorForm(method="post", action=internship.id+"/request/sponsor")
+    input(name="requestSponsor[internship_id]", value=internship.id, type="hidden")
+    input(type="submit", value="request sponsor", disabled=checkDisabled)
+    table
+      tr
+        td
+          label email\ address:
+        td
+          input(name="requestSponsor[sponsor_email_address]", value=internship.sponsor_email_address, disabled=checkSponsorRequested)
+      tr
+        td
+          label first\ name:
+        td
+          input(name="requestSponsor[sponsor_first_name]", value=internship.sponsor_first_name, disabled=checkSponsorRequested)
+      tr
+        td
+          label last\ name:
+        td
+          input(name="requestSponsor[sponsor_last_name]", value=internship.sponsor_last_name, disabled=checkSponsorRequested)
+      tr
+        td
+          label requested\ on:
+        td
+          input(name="requestSponsor[sponsor_requested_on]", value=internship.sponsor_requested_on, disabled=true)
+
+div#activities
+  p
+  a(href='./activity/new') new
+  p
+  table
+    th(align="left", style="width:10%;")
+      label status\:
+    th(align="left", style="width:30%;")
+      label project\ title\:
+

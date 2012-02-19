@@ -1,0 +1,80 @@
+h1= title
+
+div#links
+  a(href='./list') list
+  p 
+
+div#internship
+  form(method="post")
+    input(name="newIntern[student_user_id]", value=user.id, type="hidden")
+    input(name="newIntern[status]", value="pending", type="hidden")
+    input(type="submit", value="create")
+    p
+    table
+      tr
+        td
+          label status:
+        td
+          input(name='display_status', value="pending", disabled="disabled")
+      tr
+        td
+          label first\ name:
+        td
+          input(name='display_first_name', value=user.first_name, disabled="disabled")
+      tr
+        td
+          label last\ name:
+        td
+          input(name='display_last_name', value=user.last_name, disabled="disabled")
+      tr
+        td
+          label university\ student\ number:
+        td
+          input(name='newIntern[university_student_number]')
+      tr
+        td
+          label quarter\\year:
+        td
+          select(name='newIntern[quarter]', style="width: 45%;")
+            - var a = ['winter', 'spring', 'summer', 'fall']
+            each v in a
+              option(value=v)=v
+          \ \ \\\ \ \ 
+          select(name='newIntern[year]', style="width: 47%;")
+            - var a = ['2012', '2013', '2014', '2015']
+            each v in a
+              option(value=v)=v
+      tr
+        td
+          label number\ of\ credits:
+        td
+          select(name='newIntern[number_of_credits]', style="width: 100%;")
+            - var a = ['5', '10']
+            each v in a
+              option(value=v)=v
+      tr
+        td
+          label sponsor\ company:
+        td
+          input(name='newIntern[sponsor_company]')
+      tr
+        td
+          label sponsor\ address:
+        td
+          input(name='newIntern[sponsor_address]')
+      tr
+        td
+          label project\ title:
+        td
+          input(name='newIntern[project_title]')
+          
+    table
+      tr
+        td
+          label project\ description:
+      tr
+        td
+          textarea(name='newIntern[project_description]', rows=10, cols=45)
+
+div#error
+  =message

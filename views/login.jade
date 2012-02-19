@@ -1,0 +1,21 @@
+h1= title
+
+div#login
+  form(method="post")
+    table
+      tr
+        td
+          label email\ address\:
+        td
+          input(name='user[email_address]')
+      tr
+        td
+          label password\:
+        td
+          input(name='user[password]', type="password")
+    p
+      input(type="submit", value="login")
+
+div#error
+  =message
+

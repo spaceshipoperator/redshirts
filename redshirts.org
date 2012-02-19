@@ -1,0 +1,29 @@
+* redshirts
+** declaration
+   A simple, little web application to manage the requirements for completing student internships.
+
+   http://media.titanmagazines.com/filebrowser/startrek-posts/st-33-invincibles.jpg 
+** foundation
+   In the course of "Managing Technical Teams" during Winter Quarter 2012 at the Univesity of Washington, Tacoma, a small group formed to automate the existing "paper" process followed by students, faculty advisors, industry sponsors and administrative staff to complete internships.
+   
+** considerations
+   This application is intended to be the [[http://www.artima.com/intv/simplest.html]["simplest thing that could possibly work"]]
+   
+** resources
+   - install node.js and postgres
+   - git clone this repo
+   - cd redshirts
+   - npm install
+   - build the database (with script that will be provided)
+   - (at the command line) node app.js
+
+** implementation
+   - [ ] create repo on git hub
+   - [ ] refactor participant requests to new page
+   - [ ] send request to sponsor/advisor (nodemailer)
+   - [ ] accept request
+   - [ ] list activities and crud
+   - [ ] email reminders for upcoming scheduled activities
+   - [ ] generate report (pdf?)
+
+

@@ -1,0 +1,35 @@
+h1= title
+
+div#register
+  form(method="post")
+    table
+      tr
+        td
+          label first\ name:
+        td
+          input(name='newUser[first_name]')
+      tr
+        td
+          label last\ name:
+        td
+          input(name='newUser[last_name]')
+      tr
+        td
+          label email\ address\:
+        td
+          input(name='newUser[email_address]')
+      tr
+        td
+          label password\:
+        td
+          input(name='newUser[password]', type="password")
+      tr
+        td
+          label confirm\ password\:
+        td
+          input(name='newUser[confirm_password]', type="password")
+    p
+      input(type="submit", value="register")
+
+div#error
+  =message

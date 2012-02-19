@@ -1,0 +1,21 @@
+h1= title
+
+div#links
+- if (user.role=="student")
+  a(href='./new') new
+
+  p 
+  
+table(width="40%")
+  tr
+    th(align="left", style="width:10%;")
+      label status\:
+    th(align="left", style="width:30%;")
+      label project\ title\:
+  each internship in internships
+    tr
+      td= internship.status
+      td
+        a(href="./" + internship.id)= internship.project_title
+    
+

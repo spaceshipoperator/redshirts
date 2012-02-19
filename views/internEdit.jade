@@ -86,43 +86,38 @@ div#internship
           label project\ description:
       tr
         td
-          textarea(name='editIntern[project_description]', disabled=checkDisabled, rows=10, cols=45)= internship.project_description 
+          textarea(name='editIntern[project_description]', disabled=checkDisabled, rows=10, cols=45)= internship.project_description
 
-div#requests
-  h2 participants
+div#participants
+  h3 participants
   p
-  form#requestSponsorForm(method="post", action=internship.id+"/request/sponsor")
-    input(name="requestSponsor[internship_id]", value=internship.id, type="hidden")
-    input(type="submit", value="request sponsor", disabled=checkDisabled)
+  a(href=internship.id+'/request') request\ participant
+  p
+  - if (internship.participants)
     table
-      tr
-        td
-          label email\ address:
-        td
-          input(name="requestSponsor[sponsor_email_address]", value=internship.sponsor_email_address, disabled=checkSponsorRequested)
-      tr
-        td
-          label first\ name:
-        td
-          input(name="requestSponsor[sponsor_first_name]", value=internship.sponsor_first_name, disabled=checkSponsorRequested)
-      tr
-        td
-          label last\ name:
-        td
-          input(name="requestSponsor[sponsor_last_name]", value=internship.sponsor_last_name, disabled=checkSponsorRequested)
-      tr
-        td
-          label requested\ on:
-        td
-          input(name="requestSponsor[sponsor_requested_on]", value=internship.sponsor_requested_on, disabled=true)
+      th(align="left", style="width:25%;")
+        label role\:
+      th(align="left", style="width:25%;")
+        label name\:
+      th(align="left", style="width:25%;")
+        label email\:
+      th(align="left", style="width:25%;")
+        label remove\:
 
 div#activities
+  h3 activities
   p
-  a(href='./activity/new') new
+  a(href=internship.id+'/activity/new') new\ activity
   p
-  table
-    th(align="left", style="width:10%;")
-      label status\:
-    th(align="left", style="width:30%;")
-      label project\ title\:
-
+  - if (internship.activities)
+    table
+      th(align="left", style="width:20%;")
+        label decription\:
+      th(align="left", style="width:20%;")
+        label scheduled\ on\:
+      th(align="left", style="width:20%;")
+        label completed\ on\:
+      th(align="left", style="width:20%;")
+        label latest\ edit\:
+      th(align="left", style="width:20%;")
+        label latest\ contributor\:

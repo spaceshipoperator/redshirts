@@ -1,0 +1,41 @@
+h2= title
+
+div#messages
+  p= error
+
+  form#requestParticipant(method="post")
+    input(name="requestParticipant[internship_id]", value=internship.id, type="hidden")
+    input(type="submit", value="send request")
+    table
+      tr
+        td
+          participant\ type:
+        td
+          select(name='requestParticipant[type]', style="width: 100%;")
+            - var a = ['faculty advisor', 'industry sponsor']
+            each v in a
+              option(value=v)=v
+      tr
+        td
+          label first\ name:
+        td
+          input(name="requestParticipant[first_name]")
+      tr
+        td
+          label last\ name:
+        td
+          input(name="requestParticipant[last_name]")
+      tr
+        td
+          label email\ address:
+        td
+          input(name="requestParticipant[email_address]")
+    p
+    table
+      tr
+        td
+          label request\ message:
+      tr
+        td
+          textarea(name='requestParticipant[message]')
+

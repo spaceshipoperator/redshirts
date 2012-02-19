@@ -2,7 +2,7 @@
 ** declaration
    A simple, little web application to manage the requirements for completing student internships.
 
-   [[http://media.titanmagazines.com/filebrowser/startrek-posts/st-33-invincibles.jpg ]]
+   [[http://media.titanmagazines.com/filebrowser/startrek-posts/st-33-invincibles.jpg]]
 ** foundation
    In the course of "Managing Technical Teams" during Winter Quarter 2012 at the Univesity of Washington, Tacoma, a small group formed to automate the existing "paper" process followed by students, faculty advisors, industry sponsors and administrative staff to complete internships.
    

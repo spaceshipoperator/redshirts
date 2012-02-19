@@ -9,14 +9,14 @@ var qGetUser = function(d) {
     var q = " "
         + "select id, email_address, role, first_name, last_name "
         + "from users where email_address = '" + d["email_address"] + "' and password = '" + d["password"] + "' ";
-    console.log(q);
     return q;
 };
 
+// perhaps refactor for reuse...
 var qEmailAddressExists = function(d) {
     // and/or add a unique constraint on the table and handle the error message
     var q = ""
-        + "select count(1) c "
+        + "select id, email_address, role, first_name, last_name "
         + "from users "
         + "where email_address = '" + d["email_address"] + "' ";
     return q;
@@ -27,7 +27,7 @@ var qInsertNewUser = function(d) {
         + "insert into users " 
         + "(role, email_address, password, last_name, first_name) " 
         + "values ('" 
-        + "student', '"
+	+ d["role"] + "', '"
 	+ d["email_address"] + "', '"
 	+ d["password"] + "', '"
 	+ d["last_name"] + "', '"
@@ -154,7 +154,7 @@ exports.createUser = function(req, res, next){
     var d = req.body.newUser;
     
     client.query(qEmailAddressExists(d), function(err, result) {
-        if (result.rows[0].c == 0) {
+        if (result.rows.length == 0) {
             client.query(qInsertNewUser(d), function(err, result) {
 		// insert successful
 		req.body.user = d;
@@ -190,10 +190,7 @@ exports.getInternship = function(req, res, next) {
     var d = req.session.user;
     d.internship_id = req.params["internId"];
     
-    console.log(qGetInternship(d));
-    
     client.query(qGetInternship(d), function(err, result) {
-	console.log(err);
 	req.session.internship = result.rows[0];
 	next();
     });
@@ -214,23 +211,37 @@ exports.updateInternship = function(req, res, next) {
     });
 };
 
-exports.sendRequest = function(req, res, next) {
-    var d = req.session.user;
-    d.request = req.body.requestSponsor;
-
-    console.log("quxxx!!?!");
-    console.log(JSON.stringify(d.request));
+exports.getParticipant = function(req, res, next) {
+    var d = req.body.requestParticipant;
     
-    console.log(qUpdateInternshipRequest(d));
-    
-    client.query(qUpdateInternshipRequest(d), function(err, result) {
-	if (err) {
-	  console.log(err);
-          req.flash('error', "internship request *not* saved!");
-	} else {
-	  // now we send it...
-          req.flash('info', "internship request saved!");
-	}
-	next();
+    client.query(qEmailAddressExists(d), function(err, result) {
+        if (result.rows.length == 0) {
+	    // requested participant is not yet a user...
+            client.query(qInsertNewUser(d), function(err, result) {
+		// insert successful
+		req.body.requestParticipant.id = result.rows[0].id;
+		// now update the internship with the returned id
+                next();
+            });
+        } else {
+	    // requested participant is already user...
+	    if (result.rows[0].role == d.role) {
+		// user has teh role we want, great
+		req.body.requestParticipant.id = result.rows[0].id;
+		// now update the internship with the returned id
+                next();
+	    } else {
+		req.flash("error", "the person you requested already has a different role, contact the administrator!");
+                res.redirect(req.url);
+	    };
+	};
     });
+};
+
+exports.requestParticipant = function(req, res, next) {
+    var d = req.body.requestParticipant;
+    // update the internship
+    // and email the requested participant
+    console.log(d);
+    next();
 };

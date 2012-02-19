@@ -5,13 +5,14 @@ div#messages
 
   form#requestParticipant(method="post")
     input(name="requestParticipant[internship_id]", value=internship.id, type="hidden")
+    input(name="requestParticipant[password]", value="shhh", type="hidden")
     input(type="submit", value="send request")
     table
       tr
         td
           participant\ type:
         td
-          select(name='requestParticipant[type]', style="width: 100%;")
+          select(name='requestParticipant[role]', style="width: 100%;")
             - var a = ['faculty advisor', 'industry sponsor']
             each v in a
               option(value=v)=v
@@ -37,5 +38,5 @@ div#messages
           label request\ message:
       tr
         td
-          textarea(name='requestParticipant[message]')
+          textarea(name='requestParticipant[message]', rows=10, cols=45)
 

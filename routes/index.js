@@ -21,3 +21,8 @@ exports.internNew = function(req, res){
 exports.internEdit = function(req, res){
     res.render("internEdit", { title: "Edit Internship!", internship: req.session.internship, info: req.flash("info"), error: req.flash("error") })
 };
+
+exports.requestParticipant = function(req, res){
+    res.render("requestParticipant", { title: "Request Participant!", internship: req.session.internship, error: req.flash("error") })
+};
+

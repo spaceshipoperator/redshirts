@@ -71,11 +71,8 @@ app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, function(
     redirectInternEdit(req, res);
 });
 
-// TODO: maybe wanna go ahead and update the internship while we're at it?
-app.post("/:userId/intern/:internId/request/:requestType", db.getUser, db.getInternship, db.sendRequest, function(req, res) {
-    // /23/intern/6/request/sponsor
-    console.log("fooo!!!");
-    console.log(JSON.stringify(req.body.requestSponsor));
+app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
+app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, function(req, res) {
     redirectInternEdit(req, res);
 });
 
@@ -83,10 +80,6 @@ app.get("/:userId/intern/:internId/activity/new", routes.InternActivityNew)
 app.post("/:userId/intern/:internId/activity/new", function(req, res) {
     redirectInternEdit(req, res);
 });
-
-app.post("/:userId/intern/:internId/activity/:activityID", routes.InternActivityEdit)
-
-app.post("/:userId/intern/:internId/request", routes.InternRequest)
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

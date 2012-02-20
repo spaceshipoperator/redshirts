@@ -1,3 +1,9 @@
+drop table activity_comments;
+drop table activities;
+drop table participants;
+drop table internships;
+drop table users;
+
 create table users (
   id serial primary key,
   role varchar(255),
@@ -19,10 +25,6 @@ create table internships (
   sponsor_address varchar(255),
   project_title varchar(255),
   project_description text,
-  sponsor_requested_on timestamp,
-  advisor_requested_on timestamp,
-  sponsor_assigned_on timestamp,
-  advisor_assigned_on timestamp,
   admin_approved_on timestamp,
   employment_begin_on timestamp,
   colloquium_presentation_on timestamp,
@@ -33,7 +35,9 @@ create table internships (
 create table participants (
   id serial primary key,
   internship_id integer,
-  user_id integer
+  user_id integer,
+  requested_on timestamp,
+  accepted_on timestamp
 );
 
 create table activities (
@@ -60,4 +64,3 @@ alter table participants add constraint participant_user_id_fk foreign key (user
 alter table activities add constraint activities_internship_id_fk foreign key (internship_id) references internships (id);
 
 alter table activity_comments add constraint activity_comments_activity_fk foreign key (activity_id) references activities (id);
-

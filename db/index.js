@@ -45,7 +45,7 @@ var qGetInternships = function(d) {
     return q; 
 };
 
-var qInsertNewInternship = function(d) {
+var qInsertInternship = function(d) {
     var q = ""
         + "insert into internships "
         + "(student_user_id, status, project_title, project_description, university_student_number, "
@@ -95,18 +95,41 @@ var qUpdateInternship = function(d) {
     return q; 
 };
 
-var qUpdateInternshipRequest = function(d) {
+var qParticipantExists = function(d) {
     var q = ""
-        + "update internships set "
-        + "sponsor_email_address = '" + d.request["sponsor_email_address"] + "', "
-        + "sponsor_first_name = '" + d.request["sponsor_first_name"] + "', "
-        + "sponsor_last_name = '" + d.request["sponsor_last_name"] + "', "
-        + "sponsor_requested_on = current_date " 
-        + "where id = '" + d.request["internship_id"] + "' " 
-        + "and student_user_id = '" + d["id"] + "' ";
+        + "select id, internship_id, user_id "
+        + "from participants "
+        + "where internship_id = " + d["internship_id"] + " " 
+        + "and user_id = " + d["id"] + " "; 
+
+    return q;
+};
+
+var qInsertParticipant = function(d) {
+    var q = ""
+        + "insert into participants "
+        + "(internship_id, user_id, requested_on) "
+        + "values ('"
+        + d["internship_id"] + "', '"
+        + d["id"] + "', "
+        + "current_date) "
+        + "returning id ";
+
+    return q;
+};
+
+var qGetParticipants = function(d) {
+    var q = ""
+        + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address, " 
+        + " to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
+        + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on " 
+        + " from users u join participants p on u.id = p.user_id " 
+        + " where p.internship_id = " + d["internship_id"] + " "
+        + " order by p.requested_on " 
     
     return q;
 };
+
 // lil helpers
 var killSession = function(req, res) {
     if (req.session) {
@@ -115,6 +138,7 @@ var killSession = function(req, res) {
     res.redirect("/login");
 };
 
+// methods exposed to app
 exports.getUser = function(req, res, next){
     if (req.params["userId"] && req.session.user) {
 	// a session user exists and theres a userId in the URL
@@ -181,7 +205,7 @@ exports.getInternships = function(req, res, next) {
 exports.createInternship = function(req, res, next) {
     var d = req.body.newIntern;
 
-    client.query(qInsertNewInternship(d), function(err, result) {
+    client.query(qInsertInternship(d), function(err, result) {
 	next();
     });
 };
@@ -192,7 +216,12 @@ exports.getInternship = function(req, res, next) {
     
     client.query(qGetInternship(d), function(err, result) {
 	req.session.internship = result.rows[0];
-	next();
+        console.log("foo");
+        console.log(qGetParticipants(d));
+	client.query(qGetParticipants(d), function(err, result) {
+	    req.session.internship.participants = result.rows;
+	    next();
+	});
     });
 };
 
@@ -240,8 +269,19 @@ exports.getParticipant = function(req, res, next) {
 
 exports.requestParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
-    // update the internship
-    // and email the requested participant
-    console.log(d);
-    next();
+
+    client.query(qParticipantExists(d), function(err, result) {
+        if (result.rows.length == 0) {
+	    // maybe we should try sending an email before inserting the record...seems reasonable
+            client.query(qInsertParticipant(d), function(err, result) {
+	        req.flash("info", "participant requested!");
+		// participant requested
+		next();
+	    });
+	} else {
+	    req.flash("error", "the person as already been requested to participate!");
+            res.redirect(req.url);
+	}
+	
+    });
 };

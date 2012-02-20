@@ -95,14 +95,32 @@ div#participants
   p
   - if (internship.participants)
     table
-      th(align="left", style="width:25%;")
+      th(align="left", style="width:15%;")
         label role\:
-      th(align="left", style="width:25%;")
+      th(align="left", style="width:20%;")
         label name\:
-      th(align="left", style="width:25%;")
+      th(align="left", style="width:20%;")
         label email\:
-      th(align="left", style="width:25%;")
+      th(align="left", style="width:20%;")
+        label requested\ on\:
+      th(align="left", style="width:20%;")
+        label accepted\ on\:
+      th(align="left", style="width:5%;")
         label remove\:
+      - each participant in internship.participants
+        tr
+          td
+            = participant.role
+          td
+            = participant.full_name
+          td
+            = participant.email_address
+          td
+            = participant.requested_on
+          td
+            = participant.accepted_on
+          td
+            a(href="./remove/" + participant.id) X
 
 div#activities
   h3 activities

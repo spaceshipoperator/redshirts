@@ -1,3 +1,4 @@
+var nodemailer = require("nodemailer");
 var pg = require('pg'); 
 var conString = "tcp://captain:kirk@localhost/redshirts";
 
@@ -280,6 +281,33 @@ exports.requestParticipant = function(req, res, next) {
     client.query(qParticipantExists(d), function(err, result) {
         if (result.rows.length == 0) {
 	    // maybe we should try sending an email before inserting the record...seems reasonable
+	    var transport = nodemailer.createTransport("SMTP",{
+	        service: process.env.EMAIL_SENDER_SERVICE,
+	        auth: {
+	            user: process.env.EMAIL_SENDER_USER,
+	            pass: process.env.EMAIL_SENDER_PASSWORD
+	        }
+	    });
+	    
+	    var mailOptions = {
+	        transport: transport, // transport method to use
+	        from: process.env.EMAIL_SENDER_USER, // sender address
+	        to: "bmuckian@uw.edu", // list of receivers
+	        subject: "please contribute to a successful internship!", // Subject line
+	        text: "foo yoo hoo!", // plaintext body
+	        html: "<b>foo you who!!</b>" // html body
+	    }
+	    
+	    nodemailer.sendMail(mailOptions, function(error){
+	        if(error){
+	            console.log(error);
+	        }else{
+	            console.log("Message sent!");
+	        }
+	        transport.close(); // lets shut down the connection pool
+	    });
+
+	    
             client.query(qInsertParticipant(d), function(err, result) {
 	        req.flash("info", "participant requested!");
 		// participant requested

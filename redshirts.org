@@ -1,5 +1,4 @@
 * redshirts
-  
    
 ** declaration
    
@@ -29,10 +28,15 @@
 
 ** implementation
    - [X] create repo on git hub
-   - [ ] refactor participant requests to new page
-   - [ ] send request to sponsor/advisor (nodemailer)
-   - [ ] accept request
+   - [X] refactor participant requests to new page
+   - [X] send request to sponsor/advisor (nodemailer)
+   - [ ] accept request (once sponsor and advisor accepted, internship "ready" for review
+   - [ ] determine and set internship status
+   - [ ] admin workflow to review "ready" internships and mark "approved"
    - [ ] list activities and crud
+   - [ ] datepicker for activity schedule
+   - [ ] hash password clientside (and compare with confirmation at registration)
+   - [ ] add some basic clientside form validation for required fields and such
    - [ ] email reminders for upcoming scheduled activities
    - [ ] generate report (pdf?)
 

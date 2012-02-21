@@ -1,6 +1,8 @@
+var crypto = require("crypto");
 var nodemailer = require("nodemailer");
 var pg = require('pg'); 
 var conString = "tcp://captain:kirk@localhost/redshirts";
+
 
 var client = new pg.Client(conString);
 client.connect();
@@ -109,11 +111,12 @@ var qParticipantExists = function(d) {
 var qInsertParticipant = function(d) {
     var q = ""
         + "insert into participants "
-        + "(internship_id, user_id, requested_on) "
+        + "(internship_id, user_id, request_hash, requested_on) "
         + "values ('"
         + d["internship_id"] + "', '"
-        + d["id"] + "', "
-        + "current_date) "
+        + d["id"] + "', '"
+        + d["request_hash"] + "', "
+        + "to_date('" + d["requested_on"] + "', 'yyyy-mm-dd')) "
         + "returning id ";
 
     return q;
@@ -140,6 +143,26 @@ var qRemoveParticipant = function(d)  {
 };
 
 // lil helpers
+
+// from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
+// all this to get a sanely formatted date string...yeesh
+(function() {
+    Date.prototype.toYMD = Date_toYMD;
+    function Date_toYMD() {
+        var year, month, day;
+        year = String(this.getFullYear());
+        month = String(this.getMonth() + 1);
+        if (month.length == 1) {
+            month = "0" + month;
+        }
+        day = String(this.getDate());
+        if (day.length == 1) {
+            day = "0" + day;
+        }
+        return year + "-" + month + "-" + day;
+    }
+})();
+
 var killSession = function(req, res) {
     if (req.session) {
       req.session.destroy();
@@ -277,38 +300,22 @@ exports.getParticipant = function(req, res, next) {
 
 exports.requestParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
+    
+    d.requested_on = new Date().toYMD();
+    
+    var shasum = crypto.createHash("sha1");
+    
+    shasum.update(d["internship_id"] + d["email_address"] + d["requested_on"]);
+    d.request_hash = shasum.digest("hex");
+    
+    console.log("foo");
+    console.log(d);
 
     client.query(qParticipantExists(d), function(err, result) {
         if (result.rows.length == 0) {
-	    // maybe we should try sending an email before inserting the record...seems reasonable
-	    var transport = nodemailer.createTransport("SMTP",{
-	        service: process.env.EMAIL_SENDER_SERVICE,
-	        auth: {
-	            user: process.env.EMAIL_SENDER_USER,
-	            pass: process.env.EMAIL_SENDER_PASSWORD
-	        }
-	    });
-	    
-	    var mailOptions = {
-	        transport: transport, // transport method to use
-	        from: process.env.EMAIL_SENDER_USER, // sender address
-	        to: "bmuckian@uw.edu", // list of receivers
-	        subject: "please contribute to a successful internship!", // Subject line
-	        text: "foo yoo hoo!", // plaintext body
-	        html: "<b>foo you who!!</b>" // html body
-	    }
-	    
-	    nodemailer.sendMail(mailOptions, function(error){
-	        if(error){
-	            console.log(error);
-	        }else{
-	            console.log("Message sent!");
-	        }
-	        transport.close(); // lets shut down the connection pool
-	    });
-
-	    
             client.query(qInsertParticipant(d), function(err, result) {
+		console.log(err);
+		console.log(qInsertParticipant(d));
 	        req.flash("info", "participant requested!");
 		// participant requested
 		next();
@@ -325,11 +332,51 @@ exports.removeParticipant = function(req, res, next) {
     var d = req.session.internship;
     d.participant_id = req.params["participantId"];
 
-    console.log("barrr");
-    console.log(qRemoveParticipant(d));
-
     client.query(qRemoveParticipant(d), function(err, result) {
 	req.flash("info", "participant removed!");
 	next();
+    });
+};
+
+exports.sendRequest = function(req, res, next) {
+    var d = req.body.requestParticipant;
+    
+    console.log("bar");
+    console.log(d);
+    
+    var message = "Greetings! \n"
+        + "\n"
+        + "If you would kindly like to participate in Soandso's internship, please, enthusiastically click the following hyperlink!\n"
+        + "\n"
+        + "http://blablablab.org/interninfo/" + d["request_hash"] + "\n"
+        + "";
+    
+    var transport = nodemailer.createTransport("SMTP",{
+        service: process.env.EMAIL_SENDER_SERVICE,
+        auth: {
+            user: process.env.EMAIL_SENDER_USER,
+            pass: process.env.EMAIL_SENDER_PASSWORD
+        }
+    });
+    
+    var mailOptions = {
+        transport: transport, // transport method to use
+        from: process.env.EMAIL_SENDER_USER, // sender address
+        to: "bmuckian@uw.edu", // list of receivers
+        subject: "please contribute to a successful internship!", // Subject line
+        text: message, // plaintext body
+        html: message + "<b>!!</b>" // html body
+    };
+    
+    nodemailer.sendMail(mailOptions, function(error){
+        if(error){
+            console.log(error);
+	    req.flash("error", "participant request saved to database, but failed to send email!");
+        } else {
+            console.log("email sent!");
+        };
+	next();
+	
+        transport.close(); // lets shut down the connection pool
     });
 };

@@ -36,6 +36,7 @@ create table participants (
   id serial primary key,
   internship_id integer,
   user_id integer,
+  request_hash varchar(255),
   requested_on timestamp,
   accepted_on timestamp
 );

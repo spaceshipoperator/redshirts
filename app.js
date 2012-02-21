@@ -76,10 +76,14 @@ app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.
     redirectInternEdit(req, res);
 });
 
-app.get("/:userId/intern/:internId/activity/new", routes.InternActivityNew)
-app.post("/:userId/intern/:internId/activity/new", function(req, res) {
+app.get("/:userId/intern/:internId/remove/:participantId", db.getUser, db.getInternship, db.removeParticipant, function(req, res) {
     redirectInternEdit(req, res);
 });
+
+//app.get("/:userId/intern/:internId/activity/new", routes.InternActivityNew)
+//app.post("/:userId/intern/:internId/activity/new", function(req, res) {
+//    redirectInternEdit(req, res);
+//});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

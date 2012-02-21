@@ -120,13 +120,21 @@ var qInsertParticipant = function(d) {
 
 var qGetParticipants = function(d) {
     var q = ""
-        + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address, " 
+        + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
         + " to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
-        + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on " 
+        + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
         + " from users u join participants p on u.id = p.user_id " 
         + " where p.internship_id = " + d["internship_id"] + " "
         + " order by p.requested_on " 
     
+    return q;
+};
+
+var qRemoveParticipant = function(d)  {
+    var q = ""
+        + "delete from participants "
+        + "where id = " + d["participant_id"] + " "
+
     return q;
 };
 
@@ -216,8 +224,7 @@ exports.getInternship = function(req, res, next) {
     
     client.query(qGetInternship(d), function(err, result) {
 	req.session.internship = result.rows[0];
-        console.log("foo");
-        console.log(qGetParticipants(d));
+	
 	client.query(qGetParticipants(d), function(err, result) {
 	    req.session.internship.participants = result.rows;
 	    next();
@@ -283,5 +290,18 @@ exports.requestParticipant = function(req, res, next) {
             res.redirect(req.url);
 	}
 	
+    });
+};
+
+exports.removeParticipant = function(req, res, next) {
+    var d = req.session.internship;
+    d.participant_id = req.params["participantId"];
+
+    console.log("barrr");
+    console.log(qRemoveParticipant(d));
+
+    client.query(qRemoveParticipant(d), function(err, result) {
+	req.flash("info", "participant removed!");
+	next();
     });
 };

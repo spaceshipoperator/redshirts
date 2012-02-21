@@ -93,7 +93,7 @@ div#participants
   p
   a(href=internship.id+'/request') request\ participant
   p
-  - if (internship.participants)
+  - if (internship.participants.length > 0)
     table
       th(align="left", style="width:15%;")
         label role\:
@@ -120,12 +120,12 @@ div#participants
           td
             = participant.accepted_on
           td
-            a(href="./remove/" + participant.id) X
+            a(href=internship.id + "/remove/" + participant.id) X
 
 div#activities
   h3 activities
   p
-  a(href=internship.id+'/activity/new') new\ activity
+  a(href=internship.id + '/activity/new') new\ activity
   p
   - if (internship.activities)
     table

@@ -49,10 +49,10 @@ var redirectInternEdit = function(req, res) {
 // Routes
 
 app.get("/register", routes.register);
-//app.post("/register", db.createUser, db.getUser, db.getInternships, routes.internList);
-app.post("/register", db.createUser, db.getUser, function(req, res) {
-    redirectInternList(req, res);
-});
+app.post("/register", db.createUser, db.getUser, db.getInternships, routes.internList);
+//app.post("/register", db.createUser, db.getUser, function(req, res) {
+//    redirectInternList(req, res);
+//});
 
 app.get("/login", routes.login);
 app.post("/login", db.getUser, db.getInternships, routes.internList);

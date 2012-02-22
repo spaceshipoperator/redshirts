@@ -64,16 +64,12 @@ app.get("/:userId/intern/new", db.getUser, routes.internNew);
 app.post("/:userId/intern/new", db.getUser, db.createInternship, db.getInternship, routes.internEdit);
 
 app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.internEdit);
-app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternships, routes.internList);
+app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternships, routes.internEdit);
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
-app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, db.sendRequest,  function(req, res) {
-    redirectInternEdit(req, res);
-});
+app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, db.sendRequest, db.getInternship, routes.internEdit);
 
-app.get("/:userId/intern/:internId/remove/:participantId", db.getUser, db.getInternship, db.removeParticipant, function(req, res) {
-    redirectInternEdit(req, res);
-});
+app.get("/:userId/intern/:internId/remove/:participantId", db.getUser, db.removeParticipant, db.getInternship, routes.internEdit);
 
 app.get("/accept/:requestHash", db.acceptParticipant, routes.thanksParticipant);
 

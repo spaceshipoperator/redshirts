@@ -2,7 +2,7 @@ h1= title
 
 div#links
 - if (user.role=="student")
-  a(href='./new') new
+  a(href="/#{user.id}/intern/new") new
 
   p 
   
@@ -16,6 +16,6 @@ table(width="40%")
     tr
       td= internship.status
       td
-        a(href="./" + internship.id)= internship.project_title
+        a(href="/#{user.id}/intern/#{internship.id}")= internship.project_title
     
 

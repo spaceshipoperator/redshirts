@@ -4,7 +4,7 @@
   
 p
 div#links
-  a(href='./list') list
+  a(href="/#{user.id}/intern/list") list
   p 
   
 h2= title
@@ -91,7 +91,7 @@ div#internship
 div#participants
   h3 participants
   p
-  a(href=internship.id+'/request') request\ participant
+  a(href="/#{user.id}/intern/#{internship.id}/request") request\ participant
   p
   - if (internship.participants.length > 0)
     table
@@ -120,12 +120,12 @@ div#participants
           td
             = participant.accepted_on
           td
-            a(href=internship.id + "/remove/" + participant.id) X
+            a(href="/#{user.id}/intern/#{internship.id}/remove/#{participant.id}") X
 
 div#activities
   h3 activities
   p
-  a(href=internship.id + '/activity/new') new\ activity
+  a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity
   p
   - if (internship.activities)
     table

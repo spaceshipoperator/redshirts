@@ -188,7 +188,7 @@ exports.getUser = function(req, res, next){
             // they match...good to go
             next();
         } else {
-	    console.log("wtf!!!???");
+	    console.log("wtf!!!???!!");
             // don't match, get outta here
             killSession(req, res);
         }

@@ -175,7 +175,7 @@ var killSession = function(req, res) {
 exports.getUser = function(req, res, next){
 
     console.log("baz");
-    console.log(JSON.stringify(req.params));
+    console.log(JSON.stringify(req.headers.host));
 
     if (req.params["userId"] && req.session.user) {
         // a session user exists and theres a userId in the URL
@@ -242,8 +242,7 @@ exports.getInternships = function(req, res, next) {
     var d = req.session.user;
     
     console.log("qux"); 
-    console.log(JSON.stringify(req.session.user)); 
-    console.log(JSON.stringify(req.params)); 
+    console.log(JSON.stringify(req.headers.host));
 	    
     client.query(qGetInternships(d), function(err, result) {
 	req.session.internships = result.rows;

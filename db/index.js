@@ -172,13 +172,23 @@ var killSession = function(req, res) {
 
 // methods exposed to app
 exports.getUser = function(req, res, next){
+    
+    console.log(JSON.stringify(req.url));
+    console.log(JSON.stringify(req.params));
+    console.log(JSON.stringify(req.session.user));
+    console.log(JSON.stringify(req.params["userId"]));
+    console.log("if params is empty then...");
+    
+		
     if (req.params["userId"] && req.session.user) {
         // a session user exists and theres a userId in the URL
+	console.log("wtf!");
 
         if (req.params["userId"] == req.session.user.id) {
             // they match...good to go
             next();
         } else {
+	    console.log("wtf!!!???");
             // don't match, get outta here
             killSession(req, res);
         }
@@ -201,6 +211,7 @@ exports.getUser = function(req, res, next){
         if (req.url == "/login") {
             next();
         } else {
+	    console.log("wtf???!!");
             killSession(req, res);
         };
     };

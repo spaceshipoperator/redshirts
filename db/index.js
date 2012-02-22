@@ -171,34 +171,47 @@ var killSession = function(req, res) {
 };
 
 // methods exposed to app
+// methods exposed to app
 exports.getUser = function(req, res, next){
+
+    console.log("baz");
+    console.log(JSON.stringify(req.params));
+
     if (req.params["userId"] && req.session.user) {
-	// a session user exists and theres a userId in the URL
-	if (req.params["userId"] == req.session.user.id) {
-	    // they match...good to go
-	    next();
-	} else {
-	    // don't match, get outta here
+        // a session user exists and theres a userId in the URL
+
+        if (req.params["userId"] == req.session.user.id) {
+            // they match...good to go
+            next();
+        } else {
+            // don't match, get outta here
             killSession(req, res);
-	}
+        }
     } else if (req.body.user && !req.session.user) {
-	// we have credentials, but no session user, get it from the db
+        // we have credentials, but no session user, get it from the db
+        console.log("foo");
+        console.log(JSON.stringify(req.body.user));
+
         client.query(qGetUser(req.body.user), function(err, result) {
-	    if (result.rows.length == 1) {
+            if (result.rows.length == 1) {
               req.session.user = result.rows[0];
+              console.log("bar");
+              console.log(JSON.stringify(req.session.user));
+              console.log(JSON.stringify(req.params));
+
               next();
-	    } else {
+            } else {
               req.flash('error', "login failed!");
               res.redirect("/login");
-	    }
+            }
         });
     } else {
-	// something else is going on...something sinister
-	if (req.url == "/login") {
-	    next();
-	} else {
+        // something else is going on...something sinister
+        if (req.url == "/login") {
+            next();
+        } else {
             killSession(req, res);
-	};
+        };
     };
 };
 
@@ -228,6 +241,10 @@ exports.createUser = function(req, res, next){
 exports.getInternships = function(req, res, next) {
     var d = req.session.user;
     
+    console.log("qux"); 
+    console.log(JSON.stringify(req.session.user)); 
+    console.log(JSON.stringify(req.params)); 
+	    
     client.query(qGetInternships(d), function(err, result) {
 	req.session.internships = result.rows;
 	next();
@@ -243,7 +260,9 @@ exports.createInternship = function(req, res, next) {
 };
 
 exports.getInternship = function(req, res, next) {
+	
     var d = req.session.user;
+    
     d.internship_id = req.params["internId"];
     
     client.query(qGetInternship(d), function(err, result) {

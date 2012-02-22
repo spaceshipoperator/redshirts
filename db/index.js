@@ -186,12 +186,14 @@ exports.getUser = function(req, res, next){
         // we have credentials, but no session user, get it from the db
         client.query(qGetUser(req.body.user), function(err, result) {
             if (result.rows.length == 1) {
-              req.session.user = result.rows[0];
-
-              next();
+                req.session.user = result.rows[0];
+		
+		console.log(JSON.stringify(req.session));
+		
+                next();
             } else {
-              req.flash('error', "login failed!");
-              res.redirect("/login");
+                req.flash('error', "login failed!");
+                res.redirect("/login");
             }
         });
     } else {

@@ -7,19 +7,19 @@ exports.register = function(req, res){
 };
 
 exports.login = function(req, res){
-    res.render("login", { title: "Login!", message: req.flash("error") })
+    res.render("login", { title: "Login!", message: req.flash("error"), headers: JSON.stringify(req.headers) })
 };
 
 exports.internList = function(req, res){
-    res.render("internList", { title: "Internships!", internships: req.session.internships })
+    res.render("internList", { title: "Internships!", internships: req.session.internships, headers: JSON.stringify(req.headers) })
 };
 
 exports.internNew = function(req, res){
-    res.render("internNew", { title: "New Internship!", message: req.flash("error") })
+    res.render("internNew", { title: "New Internship!", message: req.flash("error"), headers: JSON.stringify(req.headers) })
 };
 
 exports.internEdit = function(req, res){
-    res.render("internEdit", { title: "Edit Internship!", internship: req.session.internship, info: req.flash("info"), error: req.flash("error") })
+    res.render("internEdit", { title: "Edit Internship!", internship: req.session.internship, info: req.flash("info"), error: req.flash("error"), headers: JSON.stringify(req.headers) })
 };
 
 exports.requestParticipant = function(req, res){

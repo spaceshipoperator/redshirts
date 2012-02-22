@@ -49,30 +49,25 @@ var redirectInternEdit = function(req, res) {
 // Routes
 
 app.get("/register", routes.register);
-app.post("/register", db.createUser, db.getUser, function(req, res) {
-    redirectInternList(req, res);
-});
+app.post("/register", db.createUser, db.getUser, db.getInternships, routes.internList);
+//app.post("/register", db.createUser, db.getUser, function(req, res) {
+//    redirectInternList(req, res);
+//});
 
 app.get("/login", routes.login);
-app.post("/login", db.getUser, db.getInternships, function(req, res) {
-    redirectInternList(req, res);
-});
+app.post("/login", db.getUser, db.getInternships, routes.internList);
 
 app.get("/:userId/intern/list", db.getUser, db.getInternships, routes.internList);
 
 // TODO: only students can create internships...if you're not one...go back to list
 app.get("/:userId/intern/new", db.getUser, routes.internNew);
-app.post("/:userId/intern/new", db.getUser, db.createInternship, function(req, res) {
-    redirectInternList(req, res);
-});
+app.post("/:userId/intern/new", db.getUser, db.createInternship, db.getInternship, routes.internEdit);
 
 app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.internEdit);
-app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, function(req, res) {
-    redirectInternEdit(req, res);
-});
+app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternships, routes.internList);
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
-app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, db.sendRequest, function(req, res) {
+app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, db.sendRequest,  function(req, res) {
     redirectInternEdit(req, res);
 });
 

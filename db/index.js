@@ -173,22 +173,12 @@ var killSession = function(req, res) {
 // methods exposed to app
 exports.getUser = function(req, res, next){
     
-    console.log(JSON.stringify(req.url));
-    console.log(JSON.stringify(req.params));
-    console.log(JSON.stringify(req.session.user));
-    console.log(JSON.stringify(req.params["userId"]));
-    console.log("if params is empty then...");
-    
-		
     if (req.params["userId"] && req.session.user) {
         // a session user exists and theres a userId in the URL
-	console.log("wtf!");
-
         if (req.params["userId"] == req.session.user.id) {
             // they match...good to go
             next();
         } else {
-	    console.log("wtf!!!???!!");
             // don't match, get outta here
             killSession(req, res);
         }
@@ -197,8 +187,6 @@ exports.getUser = function(req, res, next){
         client.query(qGetUser(req.body.user), function(err, result) {
             if (result.rows.length == 1) {
                 req.session.user = result.rows[0];
-		
-		console.log(JSON.stringify(req.session));
 		
                 next();
             } else {
@@ -211,7 +199,6 @@ exports.getUser = function(req, res, next){
         if (req.url == "/login") {
             next();
         } else {
-	    console.log("wtf???!!");
             killSession(req, res);
         };
     };
@@ -262,7 +249,7 @@ exports.getInternship = function(req, res, next) {
     var d = req.session.user;
     
     d.internship_id = req.params["internId"];
-    
+
     client.query(qGetInternship(d), function(err, result) {
 	req.session.internship = result.rows[0];
 	
@@ -329,7 +316,6 @@ exports.requestParticipant = function(req, res, next) {
         if (result.rows.length == 0) {
             client.query(qInsertParticipant(d), function(err, result) {
 		console.log(err);
-		console.log(qInsertParticipant(d));
 	        req.flash("info", "participant requested!");
 		// participant requested
 		next();

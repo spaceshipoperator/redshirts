@@ -48,7 +48,6 @@ var redirectInternEdit = function(req, res) {
 };
 
 // Routes
-
 app.get("/register", routes.register);
 app.post("/register", db.createUser, db.getUser, db.getInternships, function(req, res) {
     redirectInternList(req, res);

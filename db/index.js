@@ -142,6 +142,17 @@ var qRemoveParticipant = function(d)  {
     return q;
 };
 
+var qUpdateParticipantAcceptedOn = function(d) {
+    var q = ""
+        + "update participants "
+        + "set accepted_on = to_date('" 
+        + d["accepted_on"] + "', 'yyyy-mm-dd') "
+        + "where request_hash = '"
+        + d["request_hash"] +"' ";
+
+    return q;
+};
+
 // lil helpers
 
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
@@ -340,13 +351,17 @@ exports.removeParticipant = function(req, res, next) {
 
 exports.sendRequest = function(req, res, next) {
     var d = req.body.requestParticipant;
+    var u = req.session.user;
+    var r = process.env.EMAIL_RECEIVER || d["email_address"];
     
-    var message = "Greetings! \n"
-        + "\n"
-        + "If you would kindly like to participate in Soandso's internship, please, enthusiastically click the following hyperlink!\n"
-        + "\n"
-        + "http://blablablab.org/interninfo/" + d["request_hash"] + "\n"
-        + "";
+    var message = "Greetings! "
+        + "<p><p> "
+        + "If you would kindly like to participate in "
+        + u["first_name"] + " " + u["last_name"] + "'s " 
+        + "internship, please, enthusiastically click the following hyperlink! "
+        + "<p><p> "
+        + "http://" + d["host"] + "/accept/" + d["request_hash"] + " "
+        + "<p><p>" ; 
     
     var transport = nodemailer.createTransport("SMTP",{
         service: process.env.EMAIL_SENDER_SERVICE,
@@ -359,12 +374,12 @@ exports.sendRequest = function(req, res, next) {
     var mailOptions = {
         transport: transport, // transport method to use
         from: process.env.EMAIL_SENDER_USER, // sender address
-        to: "bmuckian@uw.edu", // list of receivers
+        to: r, // list of receivers
         subject: "please contribute to a successful internship!", // Subject line
         text: message, // plaintext body
-        html: message + "<b>!!</b>" // html body
+        html: message + "<p><p>Thank you! " // html body
     };
-    
+
     nodemailer.sendMail(mailOptions, function(error){
         if(error){
             console.log(error);
@@ -376,4 +391,22 @@ exports.sendRequest = function(req, res, next) {
 	
         transport.close(); // lets shut down the connection pool
     });
+};
+
+exports.acceptParticipant = function(req, res, next) {
+    var d = {};
+
+    d.request_hash = req.params["requestHash"];
+    d.accepted_on = new Date().toYMD();
+    
+    client.query(qUpdateParticipantAcceptedOn(d), function(err, result) {
+	if (err) {
+	    req.flash("error", "something went horribly wrong, but don't let that stop you from having a nice day!");
+            next();
+	} else {
+	    req.flash("info", "thanks for helping out with my internship!");
+	    next();
+	}
+    });
+    
 };

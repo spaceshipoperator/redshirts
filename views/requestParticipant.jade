@@ -6,6 +6,7 @@ div#messages
   form#requestParticipant(method="post")
     input(name="requestParticipant[internship_id]", value=internship.id, type="hidden")
     input(name="requestParticipant[password]", value="shhh", type="hidden")
+    input(name="requestParticipant[host]", value=host, type="hidden")
     input(type="submit", value="send request")
     table
       tr

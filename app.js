@@ -67,7 +67,9 @@ app.post("/:userId/intern/new", db.getUser, db.createInternship, function(req, r
 });
 
 app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.internEdit);
-app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternships, routes.internEdit);
+app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternships, function(req, res) {
+    redirectInternEdit(req, res);
+});
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
 app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.requestParticipant, db.sendRequest, db.getInternship, function(req, res) {

@@ -153,6 +153,15 @@ var qUpdateParticipantAcceptedOn = function(d) {
     return q;
 };
 
+var qUpdateInternshipStatus = function(d) {
+    var q = ""
+        + "update internships " 
+        + "set status = '" + d["status"] + "' "
+        + "where id = '" + d["id"] + "' ";
+    
+    return q;
+};
+
 // lil helpers
 
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
@@ -179,6 +188,67 @@ var killSession = function(req, res) {
       req.session.destroy();
     };
     res.redirect("/login");
+};
+
+var checkInternshipStatus = function(d) {
+    // d is my internship
+    // s is my status
+    var s = "pending";
+    
+    // aa is advisor accepted
+    var aa = false;
+    
+    // sa is sponsor accepted
+    var sa = false;
+
+    // are we ready
+    if (d.participants) {
+	for (var i=0; i<d.participants.length; i++) {
+	    var p = d.participants[i];
+	    
+	    // check to see if we've got an advisor
+	    if (p.role == "advisor" && p.accepted_on) {
+		aa = true;
+	    } else {
+	        // check to see if we've got an advisor
+	        if (p.role == "sponsor" && p.accepted_on) {
+		    sa = true;
+		};
+	    };
+
+	    if (aa && sa) {
+		s = "ready";
+		break;
+	    };
+	};
+    } else {
+	// without accepted sponsor/advisor, we're pending, that's that
+    };
+
+    // are we approved
+    // are we in progress
+    // do we have a milestone due
+    // are we completed
+    // are we cancelled
+    
+    return s;
+    
+};
+
+var checkSetInternshipStatus = function(req, res, next) {
+    var d = req.session.internship;
+    var c = checkInternshipStatus(d);
+    
+    if (d.status != c) {
+	d.status = c;
+
+	client.query(qUpdateInternshipStatus(d), function(err, result) {
+	    console.log("internship status updated in db...but the app moves on, async like");
+	});
+	next();
+    } else {
+	next();
+    };
 };
 
 // methods exposed to app
@@ -263,10 +333,11 @@ exports.getInternship = function(req, res, next) {
 
     client.query(qGetInternship(d), function(err, result) {
 	req.session.internship = result.rows[0];
-	
+
 	client.query(qGetParticipants(d), function(err, result) {
 	    req.session.internship.participants = result.rows;
-	    next();
+
+	    checkSetInternshipStatus(req, res, next);
 	});
     });
 };

@@ -5,8 +5,11 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     
   div#toplinks
-    a(href='/login') login
-    &nbsp
-    a(href='/register') register
+    - if (user) 
+      a(href='/logout') logout
+    - else
+      a(href='/login') login
+      &nbsp;
+      a(href='/register') register
     
   body!= body

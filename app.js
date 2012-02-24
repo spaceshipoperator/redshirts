@@ -54,9 +54,11 @@ app.post("/register", db.createUser, db.getUser, db.getInternships, function(req
 });
 
 app.get("/login", routes.login);
-app.post("/login", db.getUser, db.getInternships, function(req, res) {
+app.post("/login", db.getUser, function(req, res) {
     redirectInternList(req, res);
 });
+
+app.get("/logout", routes.logout);
 
 app.get("/:userId/intern/list", db.getUser, db.getInternships, routes.internList);
 

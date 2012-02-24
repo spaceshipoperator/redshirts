@@ -39,12 +39,28 @@ var qInsertNewUser = function(d) {
     return q;
 };
 
-var qGetInternships = function(d) {
-    // just a smidge of magic here,
-    // munging the where clause based on the session user's role
+var qGetStudentInternships = function(d) {
     var q = ""
         + "select id, student_user_id, status, project_title "
-        + "from internships where " + d["role"] + "_user_id = " + d["id"] + " "
+        + "from internships where student_user_id = " + d["id"] + " "
+    return q; 
+};
+
+var qGetAllActiveInternships = function(d) {
+    var q = ""
+        + "select id, student_user_id, status, project_title "
+        + "from internships where status in ('ready', 'approved', 'in progress', 'milestone due') "
+    return q; 
+};
+
+var qGetParticipantInternships = function(d) {
+    var q = ""
+        + "select i.id, i.student_user_id, i.status, i.project_title "
+        + "internships i join participants p "
+        + "on i.id = p.internship_id "
+        + "where p.accepted_on is not null " 
+        + "and p.id = '" + d["id"] + "' ";
+    
     return q; 
 };
 
@@ -310,11 +326,26 @@ exports.createUser = function(req, res, next){
 
 exports.getInternships = function(req, res, next) {
     var d = req.session.user;
+    var q = "";
     
-    client.query(qGetInternships(d), function(err, result) {
+    if (d.role == "student") {
+        // if student, get internships I own
+	q = qGetStudentInternships(d);
+    } else if (d.role == "admin") {
+        // if admin, get all active internships
+	q = qGetAllActiveInternships(d);
+    } else if (d.role == "sponsor" || d.role == "advisor") {
+        // if advisor/sponsor, get internships I've accepted
+	q = qGetParticipantInternships(d);
+    };
+
+    console.log(q);
+    client.query(q, function(err, result) {
+	//console.log(err);
 	req.session.internships = result.rows;
 	next();
     });
+    
 };
 
 exports.createInternship = function(req, res, next) {

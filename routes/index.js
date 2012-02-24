@@ -7,7 +7,13 @@ exports.register = function(req, res){
 };
 
 exports.login = function(req, res){
-    res.render("login", { title: "Login!", message: req.flash("error"), headers: JSON.stringify(req.headers) })
+    res.render("login", { title: "Login!", message: req.flash("error"), headers: JSON.stringify(req.headers) });
+};
+
+exports.logout = function(req,res){
+    req.session.regenerate(function(err) {
+	res.render("logout", { title: "Logout!" });
+    });
 };
 
 exports.internList = function(req, res){

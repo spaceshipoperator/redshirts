@@ -1,8 +1,8 @@
-drop table activity_comments;
-drop table activities;
-drop table participants;
-drop table internships;
-drop table users;
+drop table if exists activity_comments; 
+drop table if exists activities;
+drop table if exists participants;
+drop table if exists internships;
+drop table if exists users;
 
 create table users (
   id serial primary key,

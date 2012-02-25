@@ -56,10 +56,10 @@ var qGetAllActiveInternships = function(d) {
 var qGetParticipantInternships = function(d) {
     var q = ""
         + "select i.id, i.student_user_id, i.status, i.project_title "
-        + "internships i join participants p "
+        + "from internships i join participants p "
         + "on i.id = p.internship_id "
         + "where p.accepted_on is not null " 
-        + "and p.id = '" + d["id"] + "' ";
+        + "and p.user_id = '" + d["id"] + "' ";
     
     return q; 
 };
@@ -90,8 +90,7 @@ var qGetInternship = function(d) {
         + "select id, student_user_id, status, project_title, "
         + "student_user_id, status, project_title, project_description, university_student_number, "
         + "number_of_credits, quarter, year, sponsor_company, sponsor_address "
-        + "from internships where " + d["role"] + "_user_id = " + d["id"] + " "
-        + "and id = " + d["internship_id"] + " " 
+        + "from internships where id = " + d["internship_id"] + " " 
     
     return q; 
 };
@@ -164,7 +163,8 @@ var qUpdateParticipantAcceptedOn = function(d) {
         + "set accepted_on = to_date('" 
         + d["accepted_on"] + "', 'yyyy-mm-dd') "
         + "where request_hash = '"
-        + d["request_hash"] +"' ";
+        + d["request_hash"] +"' "
+        + "returning internship_id " 
 
     return q;
 };
@@ -251,20 +251,25 @@ var checkInternshipStatus = function(d) {
     
 };
 
-var checkSetInternshipStatus = function(req, res, next) {
-    var d = req.session.internship;
-    var c = checkInternshipStatus(d);
-    
-    if (d.status != c) {
-	d.status = c;
+var checkSetInternshipStatus = function(d) {
+    // d has an internship_id
+    // get the internship from the database
+    client.query(qGetInternship(d), function(err, result) {
+	var internship = result.rows[0];
+	
+	client.query(qGetParticipants(d), function(err, result) {
+	    internship.participants = result.rows;
 
-	client.query(qUpdateInternshipStatus(d), function(err, result) {
-	    console.log("internship status updated in db...but the app moves on, async like");
+	    var cstatus = checkInternshipStatus(internship);
+	    
+	    if (internship.status != cstatus) {
+		internship.status = cstatus;
+	        client.query(qUpdateInternshipStatus(internship), function(err, result) {
+	            console.log("internship status updated in db...but the app moves on, async like");
+	        });
+	    };
 	});
-	next();
-    } else {
-	next();
-    };
+    });
 };
 
 // methods exposed to app
@@ -368,7 +373,7 @@ exports.getInternship = function(req, res, next) {
 	client.query(qGetParticipants(d), function(err, result) {
 	    req.session.internship.participants = result.rows;
 
-	    checkSetInternshipStatus(req, res, next);
+	    next();
 	});
     });
 };
@@ -390,7 +395,6 @@ exports.updateInternship = function(req, res, next) {
 
 exports.getParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
-    
     client.query(qEmailAddressExists(d), function(err, result) {
         if (result.rows.length == 0) {
 	    // requested participant is not yet a user...
@@ -444,9 +448,12 @@ exports.requestParticipant = function(req, res, next) {
 exports.removeParticipant = function(req, res, next) {
     var d = req.session.internship;
     d.participant_id = req.params["participantId"];
+    // check/set status needs a field called internship_id...sloppy, sure...meh
+    d.internship_id = d.id;
 
     client.query(qRemoveParticipant(d), function(err, result) {
 	req.flash("info", "participant removed!");
+	checkSetInternshipStatus(d);
 	next();
     });
 };
@@ -506,7 +513,16 @@ exports.acceptParticipant = function(req, res, next) {
 	    req.flash("error", "something went horribly wrong, but don't let that stop you from having a nice day!");
             next();
 	} else {
-	    req.flash("info", "thanks for helping out with my internship!");
+	    // make sure we got an internship id, right
+	    if (result.rows[0]) {
+	        d.internship_id = result.rows[0].internship_id;
+
+	        checkSetInternshipStatus(d);
+	        req.flash("info", "thanks for helping out with my internship!");
+	    } else {
+	        req.flash("info", "whoops...couldn't find the internship, thanks anyway!");
+	    };
+	    
 	    next();
 	}
     });

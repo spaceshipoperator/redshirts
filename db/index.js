@@ -8,175 +8,97 @@ var client = new pg.Client(conString);
 client.connect();
 
 // maybe modularize all of these db queries
-var qGetUser = function(d) {
-    var q = " "
-        + "select id, email_address, role, first_name, last_name "
-        + "from users where email_address = '" + d["email_address"] + "' and password = '" + d["password"] + "' ";
-    return q;
-};
+var qGetUser = ""
+    + "select id, email_address, role, first_name, last_name "
+    + "from users where email_address = $1 and password = $2 ";
 
-// perhaps refactor for reuse...
-var qEmailAddressExists = function(d) {
-    // and/or add a unique constraint on the table and handle the error message
-    var q = ""
-        + "select id, email_address, role, first_name, last_name "
-        + "from users "
-        + "where email_address = '" + d["email_address"] + "' ";
-    return q;
-};
+var qEmailAddressExists = ""
+    + "select id, email_address, role, first_name, last_name "
+    + "from users "
+    + "where email_address = $1";
 
-var qInsertNewUser = function(d) {
-    var q = ""
-        + "insert into users " 
-        + "(role, email_address, password, last_name, first_name) " 
-        + "values ('" 
-        + d["role"] + "', '"
-        + d["email_address"] + "', '"
-        + d["password"] + "', '"
-        + d["last_name"] + "', '"
-        + d["first_name"] + "') " 
-        + "returning id ";
-    return q;
-};
+var qInsertNewUser = ""
+    + "insert into users " 
+    + "(email_address, role, password, last_name, first_name) " 
+    + "values ($1, $2, $3, $4, $5) " 
+    + "returning id ";
 
-var qGetStudentInternships = function(d) {
-    var q = ""
-        + "select id, student_user_id, status, project_title "
-        + "from internships where student_user_id = " + d["id"] + " "
-    return q; 
-};
+var qGetStudentInternships = ""
+    + "select id, student_user_id, status, project_title "
+    + "from internships where student_user_id = $1";
 
-var qGetAllActiveInternships = function(d) {
-    var q = ""
-        + "select id, student_user_id, status, project_title "
-        + "from internships where status in ('ready', 'approved', 'in progress', 'milestone due') "
-    return q; 
-};
+var qGetAllActiveInternships = ""
+    + "select id, student_user_id, status, project_title "
+    + "from internships where status in ('ready', 'approved', 'in progress', 'milestone due') ";
 
-var qGetParticipantInternships = function(d) {
-    var q = ""
-        + "select i.id, i.student_user_id, i.status, i.project_title "
-        + "from internships i join participants p "
-        + "on i.id = p.internship_id "
-        + "where p.accepted_on is not null " 
-        + "and p.user_id = '" + d["id"] + "' ";
-    
-    return q; 
-};
+var qGetParticipantInternships = ""
+    + "select i.id, i.student_user_id, i.status, i.project_title "
+    + "from internships i join participants p "
+    + "on i.id = p.internship_id "
+    + "where p.accepted_on is not null " 
+    + "and p.user_id = $1";
 
-var qInsertInternship = function(d) {
-    var q = ""
-        + "insert into internships "
-        + "(student_user_id, status, project_title, project_description, university_student_number, "
-        + "number_of_credits, quarter, year, sponsor_company, sponsor_address) "
-        + "values ('"
-        + d["student_user_id"] + "', '"
-        + d["status"] + "', '"
-        + d["project_title"] + "', '"
-        + d["project_description"] + "', '"
-        + d["university_student_number"] + "', '"
-        + d["number_of_credits"] + "', '"
-        + d["quarter"] + "', '"
-        + d["year"] + "', '"
-        + d["sponsor_company"] + "', '"
-        + d["sponsor_address"] + "') "
-        + "returning id ";
-    
-    return q; 
-};
+var qInsertInternship = ""
+    + "insert into internships "
+    + "(student_user_id, status, project_title, project_description, university_student_number, "
+    + "number_of_credits, quarter, year, sponsor_company, sponsor_address) "
+    + "values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) "
+    + "returning id ";
 
-var qGetInternship = function(d) {
-    var q = ""
-        + "select id, student_user_id, status, project_title, "
-        + "student_user_id, status, project_title, project_description, university_student_number, "
-        + "number_of_credits, quarter, year, sponsor_company, sponsor_address "
-        + "from internships where id = " + d["internship_id"] + " " 
-    
-    return q; 
-};
+var qGetInternship = ""
+    + "select id, student_user_id, status, project_title, "
+    + "student_user_id, status, project_title, project_description, university_student_number, "
+    + "number_of_credits, quarter, year, sponsor_company, sponsor_address "
+    + "from internships where id = $1 ";
 
-var qUpdateInternship = function(d) {
-    var q = ""
-        + "update internships set "
-        + "project_title = '" + d.internship["project_title"] + "', "
-        + "project_description = '" + d.internship["project_description"] + "', "
-        + "university_student_number = '" + d.internship["university_student_number"] + "', "
-        + "number_of_credits = '" + d.internship["number_of_credits"] + "', "
-        + "quarter = '" + d.internship["quarter"] + "', "
-        + "year = '" + d.internship["year"] + "', "
-        + "sponsor_company = '" + d.internship["sponsor_company"] + "', "
-        + "sponsor_address = '" + d.internship["sponsor_address"] + "' "
-        + "where id = '" + d.internship["id"] + "' " 
-        + "and student_user_id = '" + d["id"] + "' " 
-        + "and status in ('pending', 'ready') ";
+var qUpdateInternship = ""
+    + "update internships set "
+    + "project_title = $1,  "
+    + "project_description = $2,  "
+    + "university_student_number = $3,  "
+    + "number_of_credits = $4,  "
+    + "quarter = $5,  "
+    + "year = $6,  "
+    + "sponsor_company = $7,  "
+    + "sponsor_address = $8  "
+    + "where id = $9  "
+    + "and student_user_id = $10 "
+    + "and status in ('pending', 'ready') ";
 
-    return q; 
-};
+var qParticipantExists = ""
+    + "select id, internship_id, user_id "
+    + "from participants "
+    + "where internship_id = $1 " 
+    + "and user_id = $2 "; 
 
-var qParticipantExists = function(d) {
-    var q = ""
-        + "select id, internship_id, user_id "
-        + "from participants "
-        + "where internship_id = " + d["internship_id"] + " " 
-        + "and user_id = " + d["id"] + " "; 
+var qInsertParticipant = ""
+    + "insert into participants "
+    + "(internship_id, user_id, request_hash, requested_on) "
+    + "values ($1, $2, $3, to_date($4, 'yyyy-mm-dd')) "
+    + "returning id ";
 
-    return q;
-};
+var qGetParticipants = ""
+    + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
+    + " to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
+    + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
+    + " from users u join participants p on u.id = p.user_id " 
+    + " where p.internship_id = $1 " 
+    + " order by p.requested_on ";
 
-var qInsertParticipant = function(d) {
-    var q = ""
-        + "insert into participants "
-        + "(internship_id, user_id, request_hash, requested_on) "
-        + "values ('"
-        + d["internship_id"] + "', '"
-        + d["id"] + "', '"
-        + d["request_hash"] + "', "
-        + "to_date('" + d["requested_on"] + "', 'yyyy-mm-dd')) "
-        + "returning id ";
+var qRemoveParticipant = ""
+    + "delete from participants "
+    + "where id = $1 ";
 
-    return q;
-};
+var qUpdateParticipantAcceptedOn = ""
+    + "update participants "
+    + "set accepted_on = to_date($1, 'yyyy-mm-dd') "
+    + "where request_hash = $2 "
+    + "returning internship_id "; 
 
-var qGetParticipants = function(d) {
-    var q = ""
-        + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
-        + " to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
-        + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
-        + " from users u join participants p on u.id = p.user_id " 
-        + " where p.internship_id = " + d["internship_id"] + " "
-        + " order by p.requested_on " 
-    
-    return q;
-};
-
-var qRemoveParticipant = function(d)  {
-    var q = ""
-        + "delete from participants "
-        + "where id = " + d["participant_id"] + " "
-
-    return q;
-};
-
-var qUpdateParticipantAcceptedOn = function(d) {
-    var q = ""
-        + "update participants "
-        + "set accepted_on = to_date('" 
-        + d["accepted_on"] + "', 'yyyy-mm-dd') "
-        + "where request_hash = '"
-        + d["request_hash"] +"' "
-        + "returning internship_id " 
-
-    return q;
-};
-
-var qUpdateInternshipStatus = function(d) {
-    var q = ""
-        + "update internships " 
-        + "set status = '" + d["status"] + "' "
-        + "where id = '" + d["id"] + "' ";
-    
-    return q;
-};
+var qUpdateInternshipStatus = ""
+    + "update internships " 
+    + "set status = $2 "
+    + "where id = $1 ";
 
 // lil helpers
 
@@ -254,17 +176,21 @@ var checkInternshipStatus = function(d) {
 var checkSetInternshipStatus = function(d) {
     // d has an internship_id
     // get the internship from the database
-    client.query(qGetInternship(d), function(err, result) {
+    var a = [
+	d.internship_id ];
+    
+    client.query(qGetInternship, a, function(err, result) {
         var internship = result.rows[0];
         
-        client.query(qGetParticipants(d), function(err, result) {
+        client.query(qGetParticipants, a, function(err, result) {
             internship.participants = result.rows;
 
             var cstatus = checkInternshipStatus(internship);
             
             if (internship.status != cstatus) {
                 internship.status = cstatus;
-                client.query(qUpdateInternshipStatus(internship), function(err, result) {
+		a.push(cstatus);
+                client.query(qUpdateInternshipStatus, a, function(err, result) {
                     console.log("internship status updated in db...but the app moves on, async like");
                 });
             };
@@ -274,6 +200,7 @@ var checkSetInternshipStatus = function(d) {
 
 // methods exposed to app
 exports.getUser = function(req, res, next){
+    var d = req.body.user;
     
     if (req.params["userId"] && req.session.user) {
         // a session user exists and theres a userId in the URL
@@ -286,7 +213,11 @@ exports.getUser = function(req, res, next){
         }
     } else if (req.body.user && !req.session.user) {
         // we have credentials, but no session user, get it from the db
-        client.query(qGetUser(req.body.user), function(err, result) {
+	var a = [
+	    d.email_address,
+	    d.password ];
+
+        client.query(qGetUser, a, function(err, result) {
             if (result.rows.length == 1) {
                 req.session.user = result.rows[0];
                 
@@ -312,10 +243,20 @@ exports.createUser = function(req, res, next){
     
     // check to make sure this email addy doesn't already exist
     var d = req.body.newUser;
-    
-    client.query(qEmailAddressExists(d), function(err, result) {
+
+    var a = [
+	d.email_address,
+        d.role,
+        d.password,
+        d.last_name,
+        d.first_name ];
+
+    client.query(qEmailAddressExists, [a[0]], function(err, result) {
         if (result.rows.length == 0) {
-            client.query(qInsertNewUser(d), function(err, result) {
+            client.query(qInsertNewUser, a, function(err, result) {
+		console.log("bar");
+		console.log(err);
+		console.log(JSON.stringify(result));
                 // insert successful
                 req.body.user = d;
                 next();
@@ -332,20 +273,22 @@ exports.createUser = function(req, res, next){
 exports.getInternships = function(req, res, next) {
     var d = req.session.user;
     var q = "";
+    var a = [];
     
     if (d.role == "student") {
         // if student, get internships I own
-        q = qGetStudentInternships(d);
+        q = qGetStudentInternships;
+	a = [d.id];
     } else if (d.role == "admin") {
         // if admin, get all active internships
-        q = qGetAllActiveInternships(d);
+        q = qGetAllActiveInternships;
     } else if (d.role == "sponsor" || d.role == "advisor") {
         // if advisor/sponsor, get internships I've accepted
-        q = qGetParticipantInternships(d);
+        q = qGetParticipantInternships;
+	a = [d.id];
     };
 
-    console.log(q);
-    client.query(q, function(err, result) {
+    client.query(q, a, function(err, result) {
         //console.log(err);
         req.session.internships = result.rows;
         next();
@@ -356,21 +299,33 @@ exports.getInternships = function(req, res, next) {
 exports.createInternship = function(req, res, next) {
     var d = req.body.newIntern;
 
-    client.query(qInsertInternship(d), function(err, result) {
+    var a = [
+        d["student_user_id"],
+	d["status"],
+	d["project_title"],
+	d["project_description"],
+	d["university_student_number"],
+	d["number_of_credits"],
+	d["quarter"],
+	d["year"],
+	d["sponsor_company"],
+	d["sponsor_address"] ];
+    
+    client.query(qInsertInternship, a, function(err, result) {
         next();
     });
 };
 
 exports.getInternship = function(req, res, next) {
-        
     var d = req.session.user;
     
-    d.internship_id = req.params["internId"];
+    var a = [
+        req.params["internId"] ]; 
 
-    client.query(qGetInternship(d), function(err, result) {
+    client.query(qGetInternship, a, function(err, result) {
         req.session.internship = result.rows[0];
 
-        client.query(qGetParticipants(d), function(err, result) {
+        client.query(qGetParticipants, a, function(err, result) {
             req.session.internship.participants = result.rows;
 
             next();
@@ -381,8 +336,20 @@ exports.getInternship = function(req, res, next) {
 exports.updateInternship = function(req, res, next) {
     var d = req.session.user;
     d.internship = req.body.editIntern;
+
+    var a = [
+        d.internship["project_title"],
+        d.internship["project_description"],
+        d.internship["university_student_number"],
+        d.internship["number_of_credits"],
+        d.internship["quarter"],
+        d.internship["year"],
+        d.internship["sponsor_company"],
+        d.internship["sponsor_address"],
+        d.internship["id"],
+        d["id"] ];
     
-    client.query(qUpdateInternship(d), function(err, result) {
+    client.query(qUpdateInternship, a, function(err, result) {
         if (err) {
           console.log(err);
           req.flash('error', "internship *not* saved!");
@@ -395,10 +362,18 @@ exports.updateInternship = function(req, res, next) {
 
 exports.getParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
-    client.query(qEmailAddressExists(d), function(err, result) {
+
+    var a = [
+	d.email_address,
+        d.role,
+        d.password,
+        d.last_name,
+        d.first_name ];
+
+    client.query(qEmailAddressExists, [a[0]], function(err, result) {
         if (result.rows.length == 0) {
             // requested participant is not yet a user...
-            client.query(qInsertNewUser(d), function(err, result) {
+            client.query(qInsertNewUser, a, function(err, result) {
                 // insert successful
                 req.body.requestParticipant.id = result.rows[0].id;
                 // now update the internship with the returned id
@@ -428,10 +403,16 @@ exports.requestParticipant = function(req, res, next) {
     
     shasum.update(d["internship_id"] + d["email_address"] + d["requested_on"]);
     d.request_hash = shasum.digest("hex");
+
+    var a = [
+        d["internship_id"],
+        d["id"],
+        d["request_hash"],
+        d["requested_on"] ];
     
-    client.query(qParticipantExists(d), function(err, result) {
+    client.query(qParticipantExists, [a[0], a[1]], function(err, result) {
         if (result.rows.length == 0) {
-            client.query(qInsertParticipant(d), function(err, result) {
+            client.query(qInsertParticipant, a, function(err, result) {
                 console.log(err);
                 req.flash("info", "participant requested!");
                 // participant requested
@@ -451,7 +432,10 @@ exports.removeParticipant = function(req, res, next) {
     // check/set status needs a field called internship_id...sloppy, sure...meh
     d.internship_id = d.id;
 
-    client.query(qRemoveParticipant(d), function(err, result) {
+    var a = [
+	d.participant_id ]; 
+
+    client.query(qRemoveParticipant, a, function(err, result) {
         req.flash("info", "participant removed!");
         checkSetInternshipStatus(d);
         next();
@@ -505,10 +489,14 @@ exports.sendRequest = function(req, res, next) {
 exports.acceptParticipant = function(req, res, next) {
     var d = {};
 
-    d.request_hash = req.params["requestHash"];
     d.accepted_on = new Date().toYMD();
+    d.request_hash = req.params["requestHash"];
+
+    var a = [
+	d.accepted_on,
+	d.request_hash ];
     
-    client.query(qUpdateParticipantAcceptedOn(d), function(err, result) {
+    client.query(qUpdateParticipantAcceptedOn, a, function(err, result) {
         if (err) {
             req.flash("error", "something went horribly wrong, but don't let that stop you from having a nice day!");
             next();

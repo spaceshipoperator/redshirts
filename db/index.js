@@ -343,12 +343,12 @@ exports.updateInternship = function(req, res, next) {
 
     if (o == "cancel") {
         // update the cancelled on date and check/set status
-	req.flash("info", "internship cancelled!");
-	next();
+        req.flash("info", "internship cancelled!");
+        next();
     } else if (o == "approve") {
         // update approved on date and check/set status
-	req.flash("info", "internship approved!");
-	next();
+        req.flash("info", "internship approved!");
+        next();
     } else if (o == "save") {
         var a = [
             d.internship["project_title"],

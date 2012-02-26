@@ -19,24 +19,35 @@
    This application is intended to be the [[http://www.artima.com/intv/simplest.html]["simplest thing that could possibly work"]]
    
 ** resources
-   - install node.js and postgres
-   - git clone this repo
-   - cd redshirts
-   - npm install
+   - install [[http://nodejs.org/][node.js]], [[http://www.postgresql.org/download/][postgres]] and [[http://git-scm.com/download][git]]
+   - at a command prompt: 
+     #+begin_src sh
+     git clone https://github.com/spaceshipoperator/redshirts.git
+     cd redshirts
+     npm install
+     #+end_src
    - build the database (with script that will be provided)
-   - (at the command line) node app.js
+   - start the app with `node app.js`
 
 ** implementation
    - [X] create repo on git hub
    - [X] refactor participant requests to new page
    - [X] send request to sponsor/advisor (nodemailer)
-   - [ ] accept request (once sponsor and advisor accepted, internship "ready" for review
-   - [ ] determine and set internship status
+   - [X] accept request (once sponsor and advisor accepted, internship "ready" for review
+   - [X] determine and set internship status
+   - [ ] clean up code...get rid of damned tabs
+   - [ ] refactor sql queries to sanitize...safeguard against sql-injection
+   - [ ] edit internship should show student first and last name rather than logged in user
+   - [ ] advisor/sponsor should not be able to remove participant
+   - [ ] provide "cancel" button to student for active internships
+   - [ ] need to get message text included in participant request email
    - [ ] admin workflow to review "ready" internships and mark "approved"
    - [ ] list activities and crud
+   - [ ] activity comments
    - [ ] datepicker for activity schedule
+   - [ ] html layout and css 
    - [ ] hash password clientside (and compare with confirmation at registration)
-   - [ ] add some basic clientside form validation for required fields and such
+   - [ ] add clientside form validation for required fields and such
    - [ ] email reminders for upcoming scheduled activities
    - [ ] generate report (pdf?)
 

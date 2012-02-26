@@ -46,10 +46,12 @@ var qInsertInternship = ""
     + "returning id ";
 
 var qGetInternship = ""
-    + "select id, student_user_id, status, project_title, "
-    + "student_user_id, status, project_title, project_description, university_student_number, "
-    + "number_of_credits, quarter, year, sponsor_company, sponsor_address "
-    + "from internships where id = $1 ";
+    + "select i.id, i.student_user_id, i.status, u.first_name, u.last_name, i.project_title, "
+    + "i.student_user_id, i.status, i.project_title, i.project_description, i.university_student_number, "
+    + "i.number_of_credits, i.quarter, i.year, i.sponsor_company, i.sponsor_address "
+    + "from internships i join users u "
+    + "on i.student_user_id = u.id "
+    + "where i.id = $1 "
 
 var qUpdateInternship = ""
     + "update internships set "
@@ -337,27 +339,39 @@ exports.updateInternship = function(req, res, next) {
     var d = req.session.user;
     d.internship = req.body.editIntern;
 
-    var a = [
-        d.internship["project_title"],
-        d.internship["project_description"],
-        d.internship["university_student_number"],
-        d.internship["number_of_credits"],
-        d.internship["quarter"],
-        d.internship["year"],
-        d.internship["sponsor_company"],
-        d.internship["sponsor_address"],
-        d.internship["id"],
-        d["id"] ];
-    
-    client.query(qUpdateInternship, a, function(err, result) {
-        if (err) {
-          console.log(err);
-          req.flash('error', "internship *not* saved!");
-        } else {
-          req.flash('info', "internship saved!");
-        }
-        next();
-    });
+    var o = req.body.operation;
+
+    if (o == "cancel") {
+        // update the cancelled on date and check/set status
+	req.flash("info", "internship cancelled!");
+	next();
+    } else if (o == "approve") {
+        // update approved on date and check/set status
+	req.flash("info", "internship approved!");
+	next();
+    } else if (o == "save") {
+        var a = [
+            d.internship["project_title"],
+            d.internship["project_description"],
+            d.internship["university_student_number"],
+            d.internship["number_of_credits"],
+            d.internship["quarter"],
+            d.internship["year"],
+            d.internship["sponsor_company"],
+            d.internship["sponsor_address"],
+            d.internship["id"],
+            d["id"] ];
+         
+        client.query(qUpdateInternship, a, function(err, result) {
+            if (err) {
+              console.log(err);
+              req.flash('error', "internship *not* saved!");
+            } else {
+              req.flash('info', "internship saved!");
+            }
+            next();
+        });
+    };
 };
 
 exports.getParticipant = function(req, res, next) {

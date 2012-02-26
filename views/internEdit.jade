@@ -7,7 +7,10 @@ div#links
   a(href="/#{user.id}/intern/list") list
   p 
   
-h2= title
+- if (checkDisabled)
+  h2 Review Internship\!
+- else
+  h2= title
 
 div#messages
   p= error
@@ -18,7 +21,12 @@ div#internship
     table
       tr
         td
-          input(type="submit", value="save", disabled=checkDisabled)
+          - if (!(checkDisabled))
+            input(type="submit", name="operation", value="save")
+            &nbsp;
+            input(type="submit", name="operation", value="cancel")
+          - if (user.role == "admin")
+            input(type="submit", name="operation", value="approve")
           p
         td
           = info
@@ -32,12 +40,12 @@ div#internship
         td
           label first\ name:
         td
-          input(name='display_first_name', value=user.first_name, disabled="disabled")
+          input(name='display_first_name', value=internship.first_name, disabled="disabled")
       tr
         td
           label last\ name:
         td
-          input(name='display_last_name', value=user.last_name, disabled="disabled")
+          input(name='display_last_name', value=internship.last_name, disabled="disabled")
       tr
         td
           label university\ student\ number:
@@ -90,8 +98,9 @@ div#internship
 
 div#participants
   h3 participants
-  p
-  a(href="/#{user.id}/intern/#{internship.id}/request") request\ participant
+  - if (!(checkDisabled))
+    p
+    a(href="/#{user.id}/intern/#{internship.id}/request") request\ participant
   p
   - if (internship.participants.length > 0)
     table
@@ -105,8 +114,9 @@ div#participants
         label requested\ on\:
       th(align="left", style="width:20%;")
         label accepted\ on\:
-      th(align="left", style="width:5%;")
-        label remove\:
+      - if (!(checkDisabled))
+        th(align="left", style="width:5%;")
+          label remove\:
       - each participant in internship.participants
         tr
           td
@@ -119,13 +129,15 @@ div#participants
             = participant.requested_on
           td
             = participant.accepted_on
-          td
-            a(href="/#{user.id}/intern/#{internship.id}/remove/#{participant.id}") X
+          - if (!(checkDisabled))
+            td
+              a(href="/#{user.id}/intern/#{internship.id}/remove/#{participant.id}") X
 
 div#activities
   h3 activities
-  p
-  a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity
+  - if (!(checkDisabled))
+    p
+    a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity
   p
   - if (internship.activities)
     table

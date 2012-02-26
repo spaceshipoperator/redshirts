@@ -177,7 +177,7 @@ var checkSetInternshipStatus = function(d) {
     // d has an internship_id
     // get the internship from the database
     var a = [
-	d.internship_id ];
+        d.internship_id ];
     
     client.query(qGetInternship, a, function(err, result) {
         var internship = result.rows[0];
@@ -189,7 +189,7 @@ var checkSetInternshipStatus = function(d) {
             
             if (internship.status != cstatus) {
                 internship.status = cstatus;
-		a.push(cstatus);
+                a.push(cstatus);
                 client.query(qUpdateInternshipStatus, a, function(err, result) {
                     console.log("internship status updated in db...but the app moves on, async like");
                 });
@@ -213,9 +213,9 @@ exports.getUser = function(req, res, next){
         }
     } else if (req.body.user && !req.session.user) {
         // we have credentials, but no session user, get it from the db
-	var a = [
-	    d.email_address,
-	    d.password ];
+        var a = [
+            d.email_address,
+            d.password ];
 
         client.query(qGetUser, a, function(err, result) {
             if (result.rows.length == 1) {
@@ -245,7 +245,7 @@ exports.createUser = function(req, res, next){
     var d = req.body.newUser;
 
     var a = [
-	d.email_address,
+        d.email_address,
         d.role,
         d.password,
         d.last_name,
@@ -254,9 +254,9 @@ exports.createUser = function(req, res, next){
     client.query(qEmailAddressExists, [a[0]], function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertNewUser, a, function(err, result) {
-		console.log("bar");
-		console.log(err);
-		console.log(JSON.stringify(result));
+                console.log("bar");
+                console.log(err);
+                console.log(JSON.stringify(result));
                 // insert successful
                 req.body.user = d;
                 next();
@@ -278,14 +278,14 @@ exports.getInternships = function(req, res, next) {
     if (d.role == "student") {
         // if student, get internships I own
         q = qGetStudentInternships;
-	a = [d.id];
+        a = [d.id];
     } else if (d.role == "admin") {
         // if admin, get all active internships
         q = qGetAllActiveInternships;
     } else if (d.role == "sponsor" || d.role == "advisor") {
         // if advisor/sponsor, get internships I've accepted
         q = qGetParticipantInternships;
-	a = [d.id];
+        a = [d.id];
     };
 
     client.query(q, a, function(err, result) {
@@ -301,15 +301,15 @@ exports.createInternship = function(req, res, next) {
 
     var a = [
         d["student_user_id"],
-	d["status"],
-	d["project_title"],
-	d["project_description"],
-	d["university_student_number"],
-	d["number_of_credits"],
-	d["quarter"],
-	d["year"],
-	d["sponsor_company"],
-	d["sponsor_address"] ];
+        d["status"],
+        d["project_title"],
+        d["project_description"],
+        d["university_student_number"],
+        d["number_of_credits"],
+        d["quarter"],
+        d["year"],
+        d["sponsor_company"],
+        d["sponsor_address"] ];
     
     client.query(qInsertInternship, a, function(err, result) {
         next();
@@ -364,7 +364,7 @@ exports.getParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
 
     var a = [
-	d.email_address,
+        d.email_address,
         d.role,
         d.password,
         d.last_name,
@@ -433,7 +433,7 @@ exports.removeParticipant = function(req, res, next) {
     d.internship_id = d.id;
 
     var a = [
-	d.participant_id ]; 
+        d.participant_id ]; 
 
     client.query(qRemoveParticipant, a, function(err, result) {
         req.flash("info", "participant removed!");
@@ -493,8 +493,8 @@ exports.acceptParticipant = function(req, res, next) {
     d.request_hash = req.params["requestHash"];
 
     var a = [
-	d.accepted_on,
-	d.request_hash ];
+        d.accepted_on,
+        d.request_hash ];
     
     client.query(qUpdateParticipantAcceptedOn, a, function(err, result) {
         if (err) {

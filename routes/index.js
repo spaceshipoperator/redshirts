@@ -12,7 +12,7 @@ exports.login = function(req, res){
 
 exports.logout = function(req,res){
     req.session.regenerate(function(err) {
-	res.render("logout", { title: "Logout!" });
+        res.render("logout", { title: "Logout!" });
     });
 };
 

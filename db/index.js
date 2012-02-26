@@ -30,11 +30,11 @@ var qInsertNewUser = function(d) {
         + "insert into users " 
         + "(role, email_address, password, last_name, first_name) " 
         + "values ('" 
-	+ d["role"] + "', '"
-	+ d["email_address"] + "', '"
-	+ d["password"] + "', '"
-	+ d["last_name"] + "', '"
-	+ d["first_name"] + "') " 
+        + d["role"] + "', '"
+        + d["email_address"] + "', '"
+        + d["password"] + "', '"
+        + d["last_name"] + "', '"
+        + d["first_name"] + "') " 
         + "returning id ";
     return q;
 };
@@ -219,26 +219,26 @@ var checkInternshipStatus = function(d) {
 
     // are we ready
     if (d.participants) {
-	for (var i=0; i<d.participants.length; i++) {
-	    var p = d.participants[i];
-	    
-	    // check to see if we've got an advisor
-	    if (p.role == "advisor" && p.accepted_on) {
-		aa = true;
-	    } else {
-	        // check to see if we've got an advisor
-	        if (p.role == "sponsor" && p.accepted_on) {
-		    sa = true;
-		};
-	    };
+        for (var i=0; i<d.participants.length; i++) {
+            var p = d.participants[i];
+            
+            // check to see if we've got an advisor
+            if (p.role == "advisor" && p.accepted_on) {
+                aa = true;
+            } else {
+                // check to see if we've got an advisor
+                if (p.role == "sponsor" && p.accepted_on) {
+                    sa = true;
+                };
+            };
 
-	    if (aa && sa) {
-		s = "ready";
-		break;
-	    };
-	};
+            if (aa && sa) {
+                s = "ready";
+                break;
+            };
+        };
     } else {
-	// without accepted sponsor/advisor, we're pending, that's that
+        // without accepted sponsor/advisor, we're pending, that's that
     };
 
     // are we approved
@@ -255,20 +255,20 @@ var checkSetInternshipStatus = function(d) {
     // d has an internship_id
     // get the internship from the database
     client.query(qGetInternship(d), function(err, result) {
-	var internship = result.rows[0];
-	
-	client.query(qGetParticipants(d), function(err, result) {
-	    internship.participants = result.rows;
+        var internship = result.rows[0];
+        
+        client.query(qGetParticipants(d), function(err, result) {
+            internship.participants = result.rows;
 
-	    var cstatus = checkInternshipStatus(internship);
-	    
-	    if (internship.status != cstatus) {
-		internship.status = cstatus;
-	        client.query(qUpdateInternshipStatus(internship), function(err, result) {
-	            console.log("internship status updated in db...but the app moves on, async like");
-	        });
-	    };
-	});
+            var cstatus = checkInternshipStatus(internship);
+            
+            if (internship.status != cstatus) {
+                internship.status = cstatus;
+                client.query(qUpdateInternshipStatus(internship), function(err, result) {
+                    console.log("internship status updated in db...but the app moves on, async like");
+                });
+            };
+        });
     });
 };
 
@@ -289,7 +289,7 @@ exports.getUser = function(req, res, next){
         client.query(qGetUser(req.body.user), function(err, result) {
             if (result.rows.length == 1) {
                 req.session.user = result.rows[0];
-		
+                
                 next();
             } else {
                 req.flash('error', "login failed!");
@@ -316,8 +316,8 @@ exports.createUser = function(req, res, next){
     client.query(qEmailAddressExists(d), function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertNewUser(d), function(err, result) {
-		// insert successful
-		req.body.user = d;
+                // insert successful
+                req.body.user = d;
                 next();
             })
         } else {
@@ -335,20 +335,20 @@ exports.getInternships = function(req, res, next) {
     
     if (d.role == "student") {
         // if student, get internships I own
-	q = qGetStudentInternships(d);
+        q = qGetStudentInternships(d);
     } else if (d.role == "admin") {
         // if admin, get all active internships
-	q = qGetAllActiveInternships(d);
+        q = qGetAllActiveInternships(d);
     } else if (d.role == "sponsor" || d.role == "advisor") {
         // if advisor/sponsor, get internships I've accepted
-	q = qGetParticipantInternships(d);
+        q = qGetParticipantInternships(d);
     };
 
     console.log(q);
     client.query(q, function(err, result) {
-	//console.log(err);
-	req.session.internships = result.rows;
-	next();
+        //console.log(err);
+        req.session.internships = result.rows;
+        next();
     });
     
 };
@@ -357,24 +357,24 @@ exports.createInternship = function(req, res, next) {
     var d = req.body.newIntern;
 
     client.query(qInsertInternship(d), function(err, result) {
-	next();
+        next();
     });
 };
 
 exports.getInternship = function(req, res, next) {
-	
+        
     var d = req.session.user;
     
     d.internship_id = req.params["internId"];
 
     client.query(qGetInternship(d), function(err, result) {
-	req.session.internship = result.rows[0];
+        req.session.internship = result.rows[0];
 
-	client.query(qGetParticipants(d), function(err, result) {
-	    req.session.internship.participants = result.rows;
+        client.query(qGetParticipants(d), function(err, result) {
+            req.session.internship.participants = result.rows;
 
-	    next();
-	});
+            next();
+        });
     });
 };
 
@@ -383,13 +383,13 @@ exports.updateInternship = function(req, res, next) {
     d.internship = req.body.editIntern;
     
     client.query(qUpdateInternship(d), function(err, result) {
-	if (err) {
-	  console.log(err);
+        if (err) {
+          console.log(err);
           req.flash('error', "internship *not* saved!");
-	} else {
+        } else {
           req.flash('info', "internship saved!");
-	}
-	next();
+        }
+        next();
     });
 };
 
@@ -397,25 +397,25 @@ exports.getParticipant = function(req, res, next) {
     var d = req.body.requestParticipant;
     client.query(qEmailAddressExists(d), function(err, result) {
         if (result.rows.length == 0) {
-	    // requested participant is not yet a user...
+            // requested participant is not yet a user...
             client.query(qInsertNewUser(d), function(err, result) {
-		// insert successful
-		req.body.requestParticipant.id = result.rows[0].id;
-		// now update the internship with the returned id
+                // insert successful
+                req.body.requestParticipant.id = result.rows[0].id;
+                // now update the internship with the returned id
                 next();
             });
         } else {
-	    // requested participant is already user...
-	    if (result.rows[0].role == d.role) {
-		// user has teh role we want, great
-		req.body.requestParticipant.id = result.rows[0].id;
-		// now update the internship with the returned id
+            // requested participant is already user...
+            if (result.rows[0].role == d.role) {
+                // user has teh role we want, great
+                req.body.requestParticipant.id = result.rows[0].id;
+                // now update the internship with the returned id
                 next();
-	    } else {
-		req.flash("error", "the person you requested already has a different role, contact the administrator!");
+            } else {
+                req.flash("error", "the person you requested already has a different role, contact the administrator!");
                 res.redirect(req.url);
-	    };
-	};
+            };
+        };
     });
 };
 
@@ -432,16 +432,16 @@ exports.requestParticipant = function(req, res, next) {
     client.query(qParticipantExists(d), function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertParticipant(d), function(err, result) {
-		console.log(err);
-	        req.flash("info", "participant requested!");
-		// participant requested
-		next();
-	    });
-	} else {
-	    req.flash("error", "the person as already been requested to participate!");
+                console.log(err);
+                req.flash("info", "participant requested!");
+                // participant requested
+                next();
+            });
+        } else {
+            req.flash("error", "the person as already been requested to participate!");
             res.redirect(req.url);
-	}
-	
+        }
+        
     });
 };
 
@@ -452,9 +452,9 @@ exports.removeParticipant = function(req, res, next) {
     d.internship_id = d.id;
 
     client.query(qRemoveParticipant(d), function(err, result) {
-	req.flash("info", "participant removed!");
-	checkSetInternshipStatus(d);
-	next();
+        req.flash("info", "participant removed!");
+        checkSetInternshipStatus(d);
+        next();
     });
 };
 
@@ -492,12 +492,12 @@ exports.sendRequest = function(req, res, next) {
     nodemailer.sendMail(mailOptions, function(error){
         if(error){
             console.log(error);
-	    req.flash("error", "participant request saved to database, but failed to send email!");
+            req.flash("error", "participant request saved to database, but failed to send email!");
         } else {
             console.log("email sent!");
         };
-	next();
-	
+        next();
+        
         transport.close(); // lets shut down the connection pool
     });
 };
@@ -509,22 +509,22 @@ exports.acceptParticipant = function(req, res, next) {
     d.accepted_on = new Date().toYMD();
     
     client.query(qUpdateParticipantAcceptedOn(d), function(err, result) {
-	if (err) {
-	    req.flash("error", "something went horribly wrong, but don't let that stop you from having a nice day!");
+        if (err) {
+            req.flash("error", "something went horribly wrong, but don't let that stop you from having a nice day!");
             next();
-	} else {
-	    // make sure we got an internship id, right
-	    if (result.rows[0]) {
-	        d.internship_id = result.rows[0].internship_id;
+        } else {
+            // make sure we got an internship id, right
+            if (result.rows[0]) {
+                d.internship_id = result.rows[0].internship_id;
 
-	        checkSetInternshipStatus(d);
-	        req.flash("info", "thanks for helping out with my internship!");
-	    } else {
-	        req.flash("info", "whoops...couldn't find the internship, thanks anyway!");
-	    };
-	    
-	    next();
-	}
+                checkSetInternshipStatus(d);
+                req.flash("info", "thanks for helping out with my internship!");
+            } else {
+                req.flash("info", "whoops...couldn't find the internship, thanks anyway!");
+            };
+            
+            next();
+        }
     });
     
 };

@@ -3,7 +3,6 @@ var nodemailer = require("nodemailer");
 var pg = require('pg'); 
 var conString = "tcp://captain:kirk@localhost/redshirts";
 
-
 var client = new pg.Client(conString);
 client.connect();
 
@@ -15,7 +14,7 @@ var qGetUser = ""
 var qEmailAddressExists = ""
     + "select id, email_address, role, first_name, last_name "
     + "from users "
-    + "where email_address = $1";
+    + "where email_address = $1 ";
 
 var qInsertNewUser = ""
     + "insert into users " 
@@ -25,18 +24,24 @@ var qInsertNewUser = ""
 
 var qGetStudentInternships = ""
     + "select id, student_user_id, status, project_title "
-    + "from internships where student_user_id = $1";
+    + "from internships where student_user_id = $1 ";
 
 var qGetAllActiveInternships = ""
-    + "select id, student_user_id, status, project_title "
-    + "from internships where status in ('ready', 'approved', 'in progress', 'milestone due') ";
+    + "select i.id, i.student_user_id, i.status, i.project_title, "
+    + "u.first_name || ' ' || u.last_name student_name "
+    + "from internships i join users u "
+    + "on i.student_user_id = u.id "
+    + "where i.status in ('ready', 'approved', 'in progress', 'milestone due') "
 
 var qGetParticipantInternships = ""
-    + "select i.id, i.student_user_id, i.status, i.project_title "
-    + "from internships i join participants p "
+    + "select i.id, i.student_user_id, i.status, i.project_title, "
+    + "u.first_name || ' ' || u.last_name student_name "
+    + "from internships i join users u "
+    + "on i.student_user_id = u.id "
+    + "join participants p "
     + "on i.id = p.internship_id "
-    + "where p.accepted_on is not null " 
-    + "and p.user_id = $1";
+    + "where p.accepted_on is not null "
+    + "and p.user_id = $1 ";
 
 var qInsertInternship = ""
     + "insert into internships "
@@ -48,7 +53,8 @@ var qInsertInternship = ""
 var qGetInternship = ""
     + "select i.id, i.student_user_id, i.status, u.first_name, u.last_name, i.project_title, "
     + "i.student_user_id, i.status, i.project_title, i.project_description, i.university_student_number, "
-    + "i.number_of_credits, i.quarter, i.year, i.sponsor_company, i.sponsor_address "
+    + "i.number_of_credits, i.quarter, i.year, i.sponsor_company, i.sponsor_address, "
+    + "i.admin_approved_on, i.cancelled_on "
     + "from internships i join users u "
     + "on i.student_user_id = u.id "
     + "where i.id = $1 "
@@ -66,6 +72,24 @@ var qUpdateInternship = ""
     + "where id = $9  "
     + "and student_user_id = $10 "
     + "and status in ('pending', 'ready') ";
+
+var qUpdateInternshipCancelled = ""
+    + "update internships set "
+    + "cancelled_on = $2 "
+    + "where id = $1 "
+    + "returning id ";
+
+var qUpdateInternshipReopened = ""
+    + "update internships set "
+    + "cancelled_on = null "
+    + "where id = $1 "
+    + "returning id ";
+
+var qUpdateInternshipApproved = ""
+    + "update internships set "
+    + "admin_approved_on = $2 "
+    + "where id = $1 "
+    + "returning id ";
 
 var qParticipantExists = ""
     + "select id, internship_id, user_id "
@@ -141,6 +165,14 @@ var checkInternshipStatus = function(d) {
     // sa is sponsor accepted
     var sa = false;
 
+    // ap is admin approved
+    var ap = false;
+
+    // ca is cancelled 
+    var ca = false;
+
+    // 
+
     // are we ready
     if (d.participants) {
         for (var i=0; i<d.participants.length; i++) {
@@ -166,10 +198,18 @@ var checkInternshipStatus = function(d) {
     };
 
     // are we approved
+    if (s == "ready" && d.admin_approved_on) {
+        s = "approved";
+    };
+
     // are we in progress
     // do we have a milestone due
     // are we completed
+    
     // are we cancelled
+    if (d.cancelled_on) {
+        s = "cancelled";
+    };
     
     return s;
     
@@ -256,9 +296,7 @@ exports.createUser = function(req, res, next){
     client.query(qEmailAddressExists, [a[0]], function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertNewUser, a, function(err, result) {
-                console.log("bar");
                 console.log(err);
-                console.log(JSON.stringify(result));
                 // insert successful
                 req.body.user = d;
                 next();
@@ -338,19 +376,43 @@ exports.getInternship = function(req, res, next) {
 exports.updateInternship = function(req, res, next) {
     var d = req.session.user;
     d.internship = req.body.editIntern;
+    // need internship_id for check/set status...bah
+    d.internship_id = d.internship["id"];
+    var a = [];
+    var s = [
+        d.internship["id"],
+        new Date().toYMD() ];
 
     var o = req.body.operation;
 
     if (o == "cancel") {
+        // maybe cancel should remove participants too...?
         // update the cancelled on date and check/set status
-        req.flash("info", "internship cancelled!");
-        next();
+        client.query(qUpdateInternshipCancelled, s, function(err, result) {
+            console.log(err);
+            checkSetInternshipStatus(d);
+            req.flash("info", "internship cancelled!");
+            next();
+        });
+    } else if (o == "reopen") {
+        // nullify cancelled on and maybe some other dates that drive status
+        s.pop();
+        client.query(qUpdateInternshipReopened, s, function(err, result) {
+            console.log(err);
+            checkSetInternshipStatus(d);
+            req.flash("info", "internship reopened!");
+            next();
+        });
     } else if (o == "approve") {
         // update approved on date and check/set status
-        req.flash("info", "internship approved!");
-        next();
-    } else if (o == "save") {
-        var a = [
+        client.query(qUpdateInternshipApproved, s, function(err, result) {
+            console.log(err);
+            checkSetInternshipStatus(d);
+            req.flash("info", "internship approved!");
+            next();
+        });
+     } else if (o == "save") {
+        a = [
             d.internship["project_title"],
             d.internship["project_description"],
             d.internship["university_student_number"],

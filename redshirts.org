@@ -23,8 +23,11 @@
    - at a command prompt: 
      #+begin_src sh
      git clone https://github.com/spaceshipoperator/redshirts.git
+
      cd redshirts
+
      npm install
+
      #+end_src
    - build the database (with script that will be provided)
    - start the app with `node app.js`
@@ -39,8 +42,9 @@
    - [X] refactor sql queries to sanitize...safeguard against sql-injection
    - [X] edit internship should show student first and last name rather than logged in user
    - [X] advisor/sponsor should not be able to remove participant
-   - [ ] provide "cancel" button to student for active internships
-   - [ ] admin workflow to review "ready" internships and mark "approved"
+   - [X] provide "cancel" button to student for active internships
+   - [X] admin workflow to review "ready" internships and mark "approved"
+   - [ ] remove participant should clear approved_on
    - [ ] list activities and crud
    - [ ] activity comments
    - [ ] need to get message text included in participant request email

@@ -12,10 +12,15 @@ table(width="40%")
       label status\:
     th(align="left", style="width:30%;")
       label project\ title\:
+    - if (!(user.role=="student"))
+      th(align="left", style="width:30%;")
+        label student\ name\:
+    
   each internship in internships
     tr
       td= internship.status
       td
         a(href="/#{user.id}/intern/#{internship.id}")= internship.project_title
-    
+      - if (!(user.role=="student"))
+        td= internship.student_name
 

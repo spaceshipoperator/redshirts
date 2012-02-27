@@ -21,10 +21,12 @@ div#internship
     table
       tr
         td
-          - if (!(checkDisabled))
+          - if (!(checkDisabled) && !(internship.status == "cancelled"))
             input(type="submit", name="operation", value="save")
             &nbsp;
             input(type="submit", name="operation", value="cancel")
+          - if (!(checkDisabled) && (internship.status == "cancelled"))
+            input(type="submit", name="operation", value="reopen")
           - if (user.role == "admin")
             input(type="submit", name="operation", value="approve")
           p

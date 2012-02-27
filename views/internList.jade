@@ -1,10 +1,12 @@
 h1= title
 
+p= error
+
 div#links
 - if (user.role=="student")
   a(href="/#{user.id}/intern/new") new
-
-  p 
+  
+  p
   
 table(width="40%")
   tr

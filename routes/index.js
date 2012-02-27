@@ -17,7 +17,7 @@ exports.logout = function(req,res){
 };
 
 exports.internList = function(req, res){
-    res.render("internList", { title: "Internships!", internships: req.session.internships, headers: JSON.stringify(req.headers) })
+    res.render("internList", { title: "Internships!", internships: req.session.internships, error: req.flash("error"), headers: JSON.stringify(req.headers) })
 };
 
 exports.internNew = function(req, res){

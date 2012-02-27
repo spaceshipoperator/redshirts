@@ -363,13 +363,19 @@ exports.getInternship = function(req, res, next) {
         req.params["internId"] ]; 
 
     client.query(qGetInternship, a, function(err, result) {
-        req.session.internship = result.rows[0];
+        if (result.rows.length==1) {
+            req.session.internship = result.rows[0];
+            
+            client.query(qGetParticipants, a, function(err, result) {
+                req.session.internship.participants = result.rows;
+                // maybe, now we check to make sure user is associated with this internship, otherwise send back to list eh?
+                next();
+            });
+        } else {
+            req.flash("error", "whoop...can't seem to get that internship, pick again!");
+            res.redirect("/" + req.session.user.id + "/intern/list");
+        };
 
-        client.query(qGetParticipants, a, function(err, result) {
-            req.session.internship.participants = result.rows;
-
-            next();
-        });
     });
 };
 

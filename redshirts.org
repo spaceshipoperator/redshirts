@@ -45,6 +45,8 @@
    - [X] provide "cancel" button to student for active internships
    - [X] admin workflow to review "ready" internships and mark "approved"
    - [ ] remove participant should clear approved_on
+   - [ ] display employment begin date for approved internship
+   - [ ] make sure user is associated with internship before edit/review display
    - [ ] list activities and crud
    - [ ] activity comments
    - [ ] need to get message text included in participant request email
@@ -56,4 +58,5 @@
    - [ ] generate report (pdf?)
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model)
 
+     
 

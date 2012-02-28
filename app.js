@@ -84,10 +84,17 @@ app.get("/:userId/intern/:internId/remove/:participantId", db.getUser, db.remove
 
 app.get("/accept/:requestHash", db.acceptParticipant, routes.thanksParticipant);
 
-//app.get("/:userId/intern/:internId/activity/new", routes.InternActivityNew)
-//app.post("/:userId/intern/:internId/activity/new", function(req, res) {
-//    redirectInternEdit(req, res);
-//});
+app.get("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship, routes.activityNew);
+app.post("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship, db.createActivity, function(req, res) {
+    redirectInternEdit(req, res);
+});
+
+app.get("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.getActivity, routes.activityEdit);
+
+app.get("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, routes.activityComment);
+app.post("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, db.createComment, function(req, res) {
+    redirectInternEdit(req, res);
+});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

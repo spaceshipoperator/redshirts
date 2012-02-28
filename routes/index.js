@@ -35,3 +35,11 @@ exports.requestParticipant = function(req, res){
 exports.thanksParticipant = function(req, res){
     res.render("thanksParticipant", { title: "Thanks Participant!", error: req.flash("error"), info: req.flash("info") })
 };
+
+exports.activityNew = function(req, res){
+    res.render("activityNew", { title: "New Activity!", internship: req.session.internship, error: req.flash("error"), info: req.flash("info") })
+};
+
+exports.activityEdit = function(req, res){
+    res.render("activityEdit", { title: "Edit Activity!", internship: req.session.internship, error: req.flash("error"), info: req.flash("info") })
+};

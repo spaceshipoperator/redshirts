@@ -126,6 +126,18 @@ var qUpdateInternshipStatus = ""
     + "set status = $2 "
     + "where id = $1 ";
 
+var qInsertActivity = ""
+    + "insert into activities "
+    + "(internship_id, description, scheduled_on) "
+    + "values ($1, $2, to_date($3, 'yyyy-mm-dd')) "
+    + "returning id ";
+
+var qGetActivities = ""
+    + " select to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
+    + " to_char(completed_on, 'yyyy-mm-dd') completed_on, "
+    + " description " 
+    + " from activities where internship_id = $1 "
+    + " order by scheduled_on desc ";
 // lil helpers
 
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
@@ -227,15 +239,20 @@ var checkSetInternshipStatus = function(d) {
         client.query(qGetParticipants, a, function(err, result) {
             internship.participants = result.rows;
 
-            var cstatus = checkInternshipStatus(internship);
+            client.query(qGetActivities, a, function(err, result) {
+                internship.activities = result.rows;
+                
+                var cstatus = checkInternshipStatus(internship);
+                
+                if (internship.status != cstatus) {
+                    internship.status = cstatus;
+                    a.push(cstatus);
+                    client.query(qUpdateInternshipStatus, a, function(err, result) {
+                        console.log("internship status updated in db...but the app moves on, async like");
+                    });
+                };
+            });
             
-            if (internship.status != cstatus) {
-                internship.status = cstatus;
-                a.push(cstatus);
-                client.query(qUpdateInternshipStatus, a, function(err, result) {
-                    console.log("internship status updated in db...but the app moves on, async like");
-                });
-            };
         });
     });
 };
@@ -369,7 +386,11 @@ exports.getInternship = function(req, res, next) {
             client.query(qGetParticipants, a, function(err, result) {
                 req.session.internship.participants = result.rows;
                 // maybe, now we check to make sure user is associated with this internship, otherwise send back to list eh?
-                next();
+                client.query(qGetActivities, a, function(err, result) {
+                    req.session.internship.activities = result.rows;
+                    
+                    next();
+                });
             });
         } else {
             req.flash("error", "whoop...can't seem to get that internship, pick again!");
@@ -598,3 +619,20 @@ exports.acceptParticipant = function(req, res, next) {
     });
     
 };
+
+exports.createActivity = function(req, rex, next) {
+    var d = req.body.activityNew;
+    var i = req.session.internship;
+
+    var a = [
+        i["id"],
+        d["description"],
+        d["scheduled_on"] ];
+
+    client.query(qInsertActivity, a, function(err, result) {
+        console.log(err);
+        req.flash("info", "activity added!");
+        next();
+    });
+};
+

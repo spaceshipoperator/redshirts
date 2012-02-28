@@ -141,7 +141,7 @@ div#activities
     p
     a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity
   p
-  - if (internship.activities)
+  - if (internship.activities.length > 0)
     table
       th(align="left", style="width:20%;")
         label decription\:
@@ -153,3 +153,12 @@ div#activities
         label latest\ edit\:
       th(align="left", style="width:20%;")
         label latest\ contributor\:
+      - each activity in internship.activities
+        tr
+          td
+            = activity.description
+          td
+            = activity.scheduled_on
+          td
+          td
+          td

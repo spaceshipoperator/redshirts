@@ -49,6 +49,7 @@
    - [ ] make sure user is associated with internship before edit/review display
    - [ ] list activities and crud
    - [ ] activity comments
+   - [ ] introduce validate user (confirm user associated with internship) logic before allowing edit/review
    - [ ] need to get message text included in participant request email
    - [ ] datepicker for activity schedule
    - [ ] html layout and css 
@@ -57,6 +58,4 @@
    - [ ] email reminders for upcoming scheduled activities
    - [ ] generate report (pdf?)
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model)
-
-     
 

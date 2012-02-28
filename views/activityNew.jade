@@ -4,8 +4,6 @@ div#messages
   p= error
 
   form#activity(method="post")
-    input(name="activityNew[internship_id]", value=internship.id, type="hidden")
-    input(name="activityNew[user_id]", value=internship.id, type="hidden")
     input(type="submit", value="submit")
     table
       tr
@@ -13,8 +11,11 @@ div#messages
           label scheduled\ on:
         td
           input(name="activityNew[scheduled_on]")
+
+    table      
       tr
         td
           label description:
+      tr
         td
           textarea(name="activityNew[description]", rows=10, cols=45)

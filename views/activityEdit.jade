@@ -1,0 +1,39 @@
+- var checkDisabled = user.id!=internship.student_user_id;
+
+p
+div#links
+  a(href="/#{user.id}/intern/#{internship.id}") back to internship
+  p
+  
+- if (checkDisabled)
+  h2 Review Internship\!
+- else
+  h2= title
+
+div#messages
+  p= error
+
+  form#activity(method="post")
+    input(name="activityEdit[activity_id]", value=activity.id, type="hidden")
+    - if (!(checkDisabled))
+      input(type="submit", value="complete")
+    table
+      tr
+        td
+          label scheduled\ on:
+        td
+          input(name="scheduled_on", value=activity.scheduled_on, disabled=true)
+      tr
+        td
+          label completed\ on:
+        td
+          input(name="completed_on", value=activity.completed_on, disabled=true)
+          
+    table      
+      tr
+        td
+          label description:
+      tr
+        td
+          textarea(name="activityEdit[description]", disabled=checkDisabled, rows=10, cols=45)=activity.description
+

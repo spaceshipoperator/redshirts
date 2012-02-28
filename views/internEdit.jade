@@ -156,9 +156,12 @@ div#activities
       - each activity in internship.activities
         tr
           td
-            = activity.description
+            a(href="/#{user.id}/intern/#{internship.id}/activity/#{activity.id}")= activity.description
           td
             = activity.scheduled_on
           td
+            = activity.completed_on
           td
+            activity.last_edited
           td
+            activity.latest_contributor

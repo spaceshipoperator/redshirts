@@ -133,13 +133,26 @@ var qInsertActivity = ""
     + "returning id ";
 
 var qGetActivities = ""
-    + " select to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
-    + " to_char(completed_on, 'yyyy-mm-dd') completed_on, "
-    + " description " 
-    + " from activities where internship_id = $1 "
-    + " order by scheduled_on desc ";
-// lil helpers
+    + "select id, "
+    + "substring(description, 1, 27) || '...' description, "
+    + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, " 
+    + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
+    + "from activities where internship_id = $1 "
+    + "order by scheduled_on desc ";
 
+// join to get most latest edit and contributor
+// rather than complicated sql here, create a view to support that
+
+var qGetActivity = ""
+    + "select id, description, " 
+    + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
+    + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
+    + "from activities where id = $1 ";
+
+// get activity comments
+
+
+// lil helpers
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
 // all this to get a sanely formatted date string...yeesh
 (function() {
@@ -161,7 +174,7 @@ var qGetActivities = ""
 
 var killSession = function(req, res) {
     if (req.session) {
-      req.session.destroy();
+        req.session.destroy();
     };
     res.redirect("/login");
 };
@@ -630,8 +643,23 @@ exports.createActivity = function(req, rex, next) {
         d["scheduled_on"] ];
 
     client.query(qInsertActivity, a, function(err, result) {
-        console.log(err);
         req.flash("info", "activity added!");
+        next();
+    });
+};
+
+exports.getActivity = function(req, rex, next) {
+    var d = req.session.internship;
+    d.activity_id = req.params["activityId"];
+    
+    var a = [
+        d["activity_id"] ];
+
+    client.query(qGetActivity, a, function(err, result) {
+        console.log("foo");
+        console.log(err);
+        req.session.activity = result.rows[0];
+        console.log(JSON.stringify(req.session.activity));
         next();
     });
 };

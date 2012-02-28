@@ -41,5 +41,10 @@ exports.activityNew = function(req, res){
 };
 
 exports.activityEdit = function(req, res){
-    res.render("activityEdit", { title: "Edit Activity!", internship: req.session.internship, error: req.flash("error"), info: req.flash("info") })
+    res.render("activityEdit", {
+        title: "Edit Activity!",
+        internship: req.session.internship,
+        activity: req.session.activity,
+        error: req.flash("error"),
+        info: req.flash("info") })
 };

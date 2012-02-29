@@ -142,13 +142,21 @@ var qGetActivities = ""
 
 // join to get most latest edit and contributor
 // rather than complicated sql here, create a view to support that
-
 var qGetActivity = ""
     + "select id, description, " 
     + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
     + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
     + "from activities where id = $1 ";
 
+var qUpdateActivitySave = ""
+    + "update activities set description = $1, "
+    + "scheduled_on = to_date($2, 'yyyy-mm-dd'), "
+    + "completed_on = to_date($3, 'yyyy-mm-dd') "
+    + "where id = $4 ";
+
+var qUpdateActivityDelete = ""
+    + "delete from activities where id = $1 ";
+ 
 // get activity comments
 
 
@@ -357,6 +365,10 @@ exports.getInternships = function(req, res, next) {
         q = qGetParticipantInternships;
         a = [d.id];
     };
+
+    console.log("foo?!");
+    console.log(q);
+    console.log(a);
 
     client.query(q, a, function(err, result) {
         //console.log(err);
@@ -648,7 +660,7 @@ exports.createActivity = function(req, rex, next) {
     });
 };
 
-exports.getActivity = function(req, rex, next) {
+exports.getActivity = function(req, res, next) {
     var d = req.session.internship;
     d.activity_id = req.params["activityId"];
     
@@ -656,11 +668,39 @@ exports.getActivity = function(req, rex, next) {
         d["activity_id"] ];
 
     client.query(qGetActivity, a, function(err, result) {
-        console.log("foo");
         console.log(err);
         req.session.activity = result.rows[0];
-        console.log(JSON.stringify(req.session.activity));
         next();
     });
+};
+
+exports.editActivity = function(req, res, next) {
+    var d = req.body.activityEdit;
+    var o = req.body.operation;
+    var q = "";
+
+    var a = [
+        d["description"], 
+        d["scheduled_on"],
+        d["completed_on"],
+        d["activity_id"] ];
+
+    if (o == "save") {
+        client.query(qUpdateActivitySave, a, function(err, result) {
+            console.log(err);
+            //checkSetInternshipStatus(d);
+            req.flash("info", "activity saved!");
+            next();
+        });
+     } else if (o == "delete") {
+        client.query(qUpdateActivityDelete, [a[3]], function(err, result) {
+            console.log(err);
+            //checkSetInternshipStatus(d);
+            req.flash("info", "activity deleted!");
+            next();
+        });
+ 
+    };
+ 
 };
 

@@ -6,7 +6,7 @@ div#links
   p
   
 - if (checkDisabled)
-  h2 Review Internship\!
+  h2 Review Activity\!
 - else
   h2= title
 
@@ -16,18 +16,21 @@ div#messages
   form#activity(method="post")
     input(name="activityEdit[activity_id]", value=activity.id, type="hidden")
     - if (!(checkDisabled))
-      input(type="submit", value="complete")
+      input(type="submit", name="operation", value="save")
+      &nbsp;
+      input(type="submit", name="operation", value="delete")
+      p
     table
       tr
         td
           label scheduled\ on:
         td
-          input(name="scheduled_on", value=activity.scheduled_on, disabled=true)
+          input(name="activityEdit[scheduled_on]", value=activity.scheduled_on, disabled=checkDisabled)
       tr
         td
           label completed\ on:
         td
-          input(name="completed_on", value=activity.completed_on, disabled=true)
+          input(name="activityEdit[completed_on]", value=activity.completed_on, disabled=checkDisabled)
           
     table      
       tr

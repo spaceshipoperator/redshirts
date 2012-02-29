@@ -90,6 +90,9 @@ app.post("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship,
 });
 
 app.get("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.getActivity, routes.activityEdit);
+app.post("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.editActivity, function(req, res) {
+    redirectInternEdit(req, res);
+});
 
 app.get("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, routes.activityComment);
 app.post("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, db.createComment, function(req, res) {

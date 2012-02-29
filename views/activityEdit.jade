@@ -1,5 +1,25 @@
 - var checkDisabled = user.id!=internship.student_user_id;
 
+script
+  $('document').ready(function(){
+    $('#scheduledOnDatePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      onSelect: function(dateText, inst) {
+        $('[name="activityNew[scheduled_on]"]').val(dateText);
+      }
+    });
+
+    $('#completedOnDatePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      onSelect: function(dateText, inst) {
+        $('[name="activityNew[completed_on]"]').val(dateText);
+      }
+    });
+
+    $("#scheduledOnDatePicker").attr("readOnly", true);
+    $("#completedOnDatePicker").attr("readOnly", true);
+  });
+
 p
 div#links
   a(href="/#{user.id}/intern/#{internship.id}") back to internship
@@ -25,12 +45,12 @@ div#messages
         td
           label scheduled\ on:
         td
-          input(name="activityEdit[scheduled_on]", value=activity.scheduled_on, disabled=checkDisabled)
+          input(id="scheduledOnDatePicker", name="activityEdit[scheduled_on]", value=activity.scheduled_on, disabled=checkDisabled)
       tr
         td
           label completed\ on:
         td
-          input(name="activityEdit[completed_on]", value=activity.completed_on, disabled=checkDisabled)
+          input(id="completedOnDatePicker", name="activityEdit[completed_on]", value=activity.completed_on, disabled=checkDisabled)
           
     table      
       tr

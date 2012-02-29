@@ -1,3 +1,16 @@
+script
+  $('document').ready(function(){
+    $('#scheduledOnDatePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      defaultDate: +1,
+      onSelect: function(dateText, inst) {
+        $('[name="activityNew[scheduled_on]"]').val(dateText);
+      }
+    });
+
+    $("#scheduledOnDatePicker").attr("readOnly", true);
+  });
+
 h2= title
 
 div#messages
@@ -10,7 +23,7 @@ div#messages
         td
           label scheduled\ on:
         td
-          input(name="activityNew[scheduled_on]")
+          input(id="scheduledOnDatePicker", name="activityNew[scheduled_on]")
 
     table      
       tr

@@ -366,10 +366,6 @@ exports.getInternships = function(req, res, next) {
         a = [d.id];
     };
 
-    console.log("foo?!");
-    console.log(q);
-    console.log(a);
-
     client.query(q, a, function(err, result) {
         //console.log(err);
         req.session.internships = result.rows;
@@ -681,8 +677,8 @@ exports.editActivity = function(req, res, next) {
 
     var a = [
         d["description"], 
-        d["scheduled_on"],
-        d["completed_on"],
+        d["scheduled_on"] || null,
+        d["completed_on"] || null,
         d["activity_id"] ];
 
     if (o == "save") {

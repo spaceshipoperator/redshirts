@@ -148,6 +148,19 @@ var qGetActivity = ""
     + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
     + "from activities where id = $1 ";
 
+var qGetActivity = ""
+    + "select id, description, " 
+    + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
+    + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
+    + "from activities where id = $1 ";
+
+var qGetComments = " "
+    + "select u.first_name || ' ' || u.last_name contributor, "
+    + "to_char(c.posted_on, 'yyyy-mm-dd') posted_on, "
+    + "c.comment from comments c "
+    + "join users u on c.user_id = u.id "
+    + "where c.activity_id = $1 ";
+
 var qUpdateActivitySave = ""
     + "update activities set description = $1, "
     + "scheduled_on = to_date($2, 'yyyy-mm-dd'), "
@@ -156,9 +169,14 @@ var qUpdateActivitySave = ""
 
 var qUpdateActivityDelete = ""
     + "delete from activities where id = $1 ";
- 
-// get activity comments
 
+var qInsertComment = ""
+    + "insert into comments " 
+    + "(activity_id, user_id, posted_on, comment) " 
+    + "values ($1, $2, to_date($3, 'yyyy-mm-dd'), $4) " 
+    + "returning id ";
+
+// get activity comments
 
 // lil helpers
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
@@ -666,7 +684,13 @@ exports.getActivity = function(req, res, next) {
     client.query(qGetActivity, a, function(err, result) {
         console.log(err);
         req.session.activity = result.rows[0];
-        next();
+        
+        client.query(qGetComments, a, function(err, result) {
+            console.log(err);
+            req.session.activity.comments = result.rows;
+            console.log(JSON.stringify(req.session.activity.comments));
+            next();
+        });
     });
 };
 
@@ -700,3 +724,18 @@ exports.editActivity = function(req, res, next) {
  
 };
 
+exports.createComment = function(req, res, next) {
+    var d = req.body.commentNew;
+
+    var a = [
+        d["activity_id"],
+        d["user_id"],
+        new Date().toYMD(),
+        d["comment"] ];
+
+    client.query(qInsertComment, a, function(err, result) {
+        req.flash("info", "comment added!");
+        next();
+    });
+
+};

@@ -59,4 +59,25 @@ div#messages
       tr
         td
           textarea(name="activityEdit[description]", disabled=checkDisabled, rows=10, cols=45)=activity.description
-
+          
+div#comments
+  h3 comments
+  p
+  a(href="/#{user.id}/intern/#{internship.id}/activity/#{activity.id}/comment") new\ comment
+  p
+  - if (activity.comments.length > 0)
+    table
+      th(align="left", style="width:20%;")
+        label contributor\:
+      th(align="left", style="width:20%;")
+        label posted\ on\:
+      th(align="left", style="width:60;")
+        label comment\:
+      - each comment in activity.comments
+        tr
+          td
+            =comment.contributor
+          td
+            =comment.posted_on
+          td
+            =comment.comment

@@ -1,0 +1,16 @@
+h2= title
+
+div#messages
+  p= error
+
+  form#comment(method="post")
+    input(type="submit", value="submit")
+    input(name="commentNew[activity_id]", value=activity.id, type="hidden")
+    input(name="commentNew[user_id]", value=user.id, type="hidden")
+    table      
+      tr
+        td
+          label comment:
+      tr
+        td
+          textarea(name="commentNew[comment]", rows=10, cols=45)

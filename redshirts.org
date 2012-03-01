@@ -44,15 +44,19 @@
    - [X] advisor/sponsor should not be able to remove participant
    - [X] provide "cancel" button to student for active internships
    - [X] admin workflow to review "ready" internships and mark "approved"
+   - [X] list activities and crud
+   - [X] datepicker for activity schedule
+   - [X] activity comments
+   - [ ] delete associated comments on delete of activity
+   - [ ] display most recent posted on and contributor in activity list
    - [ ] remove participant should clear approved_on
    - [ ] display employment begin date for approved internship
-   - [ ] make sure user is associated with internship before edit/review display
-   - [ ] list activities and crud
-   - [ ] activity comments
-   - [ ] introduce validate user (confirm user associated with internship) logic before allowing edit/review
+   - [ ] if "employment begin date" is today or earlier status should be "in progress"
+   - [ ] if activity "scheduled on" upcoming within two days, status should be "milestone due"
+   - [ ] make sure user is associated with internship before edit/review display 
    - [ ] need to get message text included in participant request email
-   - [ ] datepicker for activity schedule
    - [ ] html layout and css 
+   - [ ] content baby
    - [ ] hash password clientside (and compare with confirmation at registration)
    - [ ] add clientside form validation for required fields and such
    - [ ] email reminders for upcoming scheduled activities

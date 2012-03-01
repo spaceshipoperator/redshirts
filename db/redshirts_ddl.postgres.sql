@@ -1,8 +1,8 @@
-drop table if exists activity_comments; 
-drop table if exists activities;
-drop table if exists participants;
-drop table if exists internships;
-drop table if exists users;
+drop table if exists comments cascade; 
+drop table if exists activities cascade;
+drop table if exists participants cascade;
+drop table if exists internships cascade;
+drop table if exists users cascade;
 
 create table users (
   id serial primary key,
@@ -49,12 +49,12 @@ create table activities (
   completed_on timestamp
 );
 
-create table activity_comments (
+create table comments (
   id serial primary key,
   activity_id integer,
   user_id integer,
-  comment text,
-  edited_on timestamp 
+  posted_on timestamp,
+  comment text
 );
 
 alter table internships add constraint internships_student_user_id_fk foreign key (student_user_id) references users (id);
@@ -64,4 +64,7 @@ alter table participants add constraint participant_user_id_fk foreign key (user
 
 alter table activities add constraint activities_internship_id_fk foreign key (internship_id) references internships (id);
 
-alter table activity_comments add constraint activity_comments_activity_fk foreign key (activity_id) references activities (id);
+alter table comments add constraint comments_activity_fk foreign key (activity_id) references activities (id);
+
+insert into users (role, email_address, password, last_name, first_name)
+values ('admin', 'iadmin@uw.edu', 'secret', 'Administrator', 'Internship');

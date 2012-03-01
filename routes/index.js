@@ -48,3 +48,7 @@ exports.activityEdit = function(req, res){
         error: req.flash("error"),
         info: req.flash("info") })
 };
+
+exports.activityComment = function(req, res){
+    res.render("activityComment", { title: "New Comment!", activity: req.session.activity, error: req.flash("error"), info: req.flash("info") })
+};

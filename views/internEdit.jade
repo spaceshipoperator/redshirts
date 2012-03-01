@@ -150,9 +150,9 @@ div#activities
       th(align="left", style="width:20%;")
         label completed\ on\:
       th(align="left", style="width:20%;")
-        label latest\ edit\:
-      th(align="left", style="width:20%;")
         label latest\ contributor\:
+      th(align="left", style="width:20%;")
+        label latest\ edit\:
       - each activity in internship.activities
         tr
           td
@@ -162,6 +162,6 @@ div#activities
           td
             = activity.completed_on
           td
-            activity.last_edited
+            = activity.latest_contributor
           td
-            activity.latest_contributor
+            = activity.latest_edit

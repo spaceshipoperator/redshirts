@@ -133,12 +133,27 @@ var qInsertActivity = ""
     + "returning id ";
 
 var qGetActivities = ""
-    + "select id, "
-    + "substring(description, 1, 27) || '...' description, "
-    + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, " 
-    + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
-    + "from activities where internship_id = $1 "
-    + "order by scheduled_on desc ";
+    + "with latest_comment as ( " 
+    + "select " 
+    + "activity_id, " 
+    + "max(id) id " 
+    + "from comments " 
+    + "group by activity_id ) " 
+    + "select a.id, " 
+    + "substring(a.description, 1, 27) || '...' description, " 
+    + "to_char(a.scheduled_on, 'yyyy-mm-dd') scheduled_on, " 
+    + "to_char(a.completed_on, 'yyyy-mm-dd') completed_on, " 
+    + "u.first_name || ' ' || u.last_name latest_contributor, " 
+    + "to_char(c.posted_on, 'yyyy-mm-dd') latest_edit " 
+    + "from activities a " 
+    + "left join latest_comment lc " 
+    + "on a.id = lc.activity_id " 
+    + "left join comments c " 
+    + "on lc.id = c.id " 
+    + "left join users u " 
+    + "on c.user_id = u.id " 
+    + "where a.internship_id = $1 " 
+    + "order by a.scheduled_on desc ";
 
 // join to get most latest edit and contributor
 // rather than complicated sql here, create a view to support that
@@ -166,6 +181,9 @@ var qUpdateActivitySave = ""
     + "scheduled_on = to_date($2, 'yyyy-mm-dd'), "
     + "completed_on = to_date($3, 'yyyy-mm-dd') "
     + "where id = $4 ";
+
+var qDeleteComments = ""
+    + "delete from comments where activity_id = $1 ";
 
 var qUpdateActivityDelete = ""
     + "delete from activities where id = $1 ";
@@ -291,7 +309,6 @@ var checkSetInternshipStatus = function(d) {
                     });
                 };
             });
-            
         });
     });
 };
@@ -352,7 +369,7 @@ exports.createUser = function(req, res, next){
     client.query(qEmailAddressExists, [a[0]], function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertNewUser, a, function(err, result) {
-                console.log(err);
+                if (err) { console.log(err) };
                 // insert successful
                 req.body.user = d;
                 next();
@@ -385,7 +402,7 @@ exports.getInternships = function(req, res, next) {
     };
 
     client.query(q, a, function(err, result) {
-        //console.log(err);
+        //if (err) { console.log(err) };
         req.session.internships = result.rows;
         next();
     });
@@ -455,7 +472,7 @@ exports.updateInternship = function(req, res, next) {
         // maybe cancel should remove participants too...?
         // update the cancelled on date and check/set status
         client.query(qUpdateInternshipCancelled, s, function(err, result) {
-            console.log(err);
+            if (err) { console.log(err) };
             checkSetInternshipStatus(d);
             req.flash("info", "internship cancelled!");
             next();
@@ -464,7 +481,7 @@ exports.updateInternship = function(req, res, next) {
         // nullify cancelled on and maybe some other dates that drive status
         s.pop();
         client.query(qUpdateInternshipReopened, s, function(err, result) {
-            console.log(err);
+            if (err) { console.log(err) };
             checkSetInternshipStatus(d);
             req.flash("info", "internship reopened!");
             next();
@@ -472,7 +489,7 @@ exports.updateInternship = function(req, res, next) {
     } else if (o == "approve") {
         // update approved on date and check/set status
         client.query(qUpdateInternshipApproved, s, function(err, result) {
-            console.log(err);
+            if (err) { console.log(err) };
             checkSetInternshipStatus(d);
             req.flash("info", "internship approved!");
             next();
@@ -492,7 +509,7 @@ exports.updateInternship = function(req, res, next) {
          
         client.query(qUpdateInternship, a, function(err, result) {
             if (err) {
-              console.log(err);
+              if (err) { console.log(err) };
               req.flash('error', "internship *not* saved!");
             } else {
               req.flash('info', "internship saved!");
@@ -555,7 +572,7 @@ exports.requestParticipant = function(req, res, next) {
     client.query(qParticipantExists, [a[0], a[1]], function(err, result) {
         if (result.rows.length == 0) {
             client.query(qInsertParticipant, a, function(err, result) {
-                console.log(err);
+                if (err) { console.log(err) };
                 req.flash("info", "participant requested!");
                 // participant requested
                 next();
@@ -682,13 +699,12 @@ exports.getActivity = function(req, res, next) {
         d["activity_id"] ];
 
     client.query(qGetActivity, a, function(err, result) {
-        console.log(err);
+        if (err) { console.log(err) };
         req.session.activity = result.rows[0];
         
         client.query(qGetComments, a, function(err, result) {
-            console.log(err);
+            if (err) { console.log(err) };
             req.session.activity.comments = result.rows;
-            console.log(JSON.stringify(req.session.activity.comments));
             next();
         });
     });
@@ -706,22 +722,24 @@ exports.editActivity = function(req, res, next) {
         d["activity_id"] ];
 
     if (o == "save") {
+        
         client.query(qUpdateActivitySave, a, function(err, result) {
-            console.log(err);
+            if (err) { console.log(err) };
             //checkSetInternshipStatus(d);
             req.flash("info", "activity saved!");
             next();
         });
-     } else if (o == "delete") {
-        client.query(qUpdateActivityDelete, [a[3]], function(err, result) {
-            console.log(err);
-            //checkSetInternshipStatus(d);
-            req.flash("info", "activity deleted!");
-            next();
+    } else if (o == "delete") {
+        client.query(qDeleteComments, [a[3]], function(err, result) {
+            if (err) { console.log(err) };
+            client.query(qUpdateActivityDelete, [a[3]], function(err, result) {
+                if (err) { console.log(err) };
+                //checkSetInternshipStatus(d);
+                req.flash("info", "activity deleted!");
+                next();
+            });
         });
- 
     };
- 
 };
 
 exports.createComment = function(req, res, next) {

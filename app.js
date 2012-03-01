@@ -96,7 +96,7 @@ app.post("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInt
 
 app.get("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, routes.activityComment);
 app.post("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, db.getInternship, db.getActivity, db.createComment, function(req, res) {
-    redirectInternEdit(req, res);
+    res.redirect("/" + req.session.user.id + "/intern/" + req.params["internId"] + "/activity/ " + req.params["activityId"]);
 });
 
 app.listen(3000);

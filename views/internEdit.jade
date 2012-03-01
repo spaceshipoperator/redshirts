@@ -1,6 +1,17 @@
 - var checkDisabled = user.id!=internship.student_user_id;
 - var checkSponsorRequested = internship.sponsor_requested_on;
 - var checkAdvisorRequested = internship.advisor_requested_on;
+script
+  $('document').ready(function(){
+    $('#employmentBeginOnDatePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      onSelect: function(dateText, inst) {
+        $('[name="editIntern[employment_begin_on]"]').val(dateText);
+      }
+    });
+
+    $("#employmentBeginOnDatePicker").attr("readOnly", true);
+  });
 
 p
 div#links
@@ -62,7 +73,7 @@ div#internship
             each v in a
               option(value=v, selected=v==internship.quarter, disabled=checkDisabled)=v
           \ \ \\\ \ \ 
-          select(name='editIntern[year]', style="width: 42%;")
+          select(name='editIntern[year]', style="width: 30;")
             - var a = ['2012', '2013', '2014', '2015']
             each v in a
               option(value=v, selected=v==internship.year, disabled=checkDisabled)=v
@@ -70,7 +81,7 @@ div#internship
         td
           label number\ of\ credits:
         td
-          select(name='editIntern[number_of_credits]', style="width: 100%;")
+          select(name='editIntern[number_of_credits]', style="width: 80;")
             - var a = ['5', '10']
             each v in a
               option(value=v, selected=v==internship.number_of_credits, disabled=checkDisabled)=v
@@ -89,7 +100,23 @@ div#internship
           label project\ title:
         td
           input(name='editIntern[project_title]', value=internship.project_title, disabled=checkDisabled)
-          
+      - if (["pending", "ready"].indexOf(internship.status) == -1)
+        tr
+          td
+            label admin\ approved\ on\:
+          td
+            input(name='editIntern[admin_approved_on]', value=internship.admin_approved_on, disabled=true)
+        tr
+          td
+            label employment\ begin\ on\:
+          td
+            input(id="employmentBeginOnDatePicker", name='editIntern[employment_begin_on]', value=internship.employment_begin_on, disabled=checkDisabled)
+        tr
+          td
+            label colloquium\ presentation\ on\:
+          td
+            input(id="presentationOnDatePicker", name='editIntern[colloquium_presentation_on]', value=internship.colloquium_presentation_on, disabled=checkDisabled)
+            
     table
       tr
         td

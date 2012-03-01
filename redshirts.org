@@ -47,19 +47,20 @@
    - [X] list activities and crud
    - [X] datepicker for activity schedule
    - [X] activity comments
-   - [ ] delete associated comments on delete of activity
-   - [ ] display most recent posted on and contributor in activity list
-   - [ ] remove participant should clear approved_on
-   - [ ] display employment begin date for approved internship
+   - [X] delete associated comments on delete of activity
+   - [X] display most recent posted on and contributor in activity list
+   - [X] remove participant should clear approved_on
+   - [X] display employment begin date for approved internship
    - [ ] if "employment begin date" is today or earlier status should be "in progress"
    - [ ] if activity "scheduled on" upcoming within two days, status should be "milestone due"
    - [ ] make sure user is associated with internship before edit/review display 
    - [ ] need to get message text included in participant request email
    - [ ] html layout and css 
    - [ ] content baby
-   - [ ] hash password clientside (and compare with confirmation at registration)
+   - [ ] hash password clientside (and compare with confirmation) at registration
    - [ ] add clientside form validation for required fields and such
    - [ ] email reminders for upcoming scheduled activities
+   - [ ] lost password, reset recovery..
    - [ ] generate report (pdf?)
-   - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model)
+   - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model..next release of app?)
 

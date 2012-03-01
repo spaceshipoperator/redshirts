@@ -35,12 +35,12 @@ div#internship
         td
           label quarter\\year:
         td
-          select(name='newIntern[quarter]', style="width: 45%;")
+          select(name='newIntern[quarter]', style="width: 50;")
             - var a = ['winter', 'spring', 'summer', 'fall']
             each v in a
               option(value=v)=v
           \ \ \\\ \ \ 
-          select(name='newIntern[year]', style="width: 47%;")
+          select(name='newIntern[year]', style="width: 30;")
             - var a = ['2012', '2013', '2014', '2015']
             each v in a
               option(value=v)=v
@@ -48,7 +48,7 @@ div#internship
         td
           label number\ of\ credits:
         td
-          select(name='newIntern[number_of_credits]', style="width: 100%;")
+          select(name='newIntern[number_of_credits]', style="width: 80;")
             - var a = ['5', '10']
             each v in a
               option(value=v)=v

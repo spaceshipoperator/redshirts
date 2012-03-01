@@ -54,24 +54,30 @@ var qGetInternship = ""
     + "select i.id, i.student_user_id, i.status, u.first_name, u.last_name, i.project_title, "
     + "i.student_user_id, i.status, i.project_title, i.project_description, i.university_student_number, "
     + "i.number_of_credits, i.quarter, i.year, i.sponsor_company, i.sponsor_address, "
-    + "i.admin_approved_on, i.cancelled_on "
+    + "to_char(i.admin_approved_on, 'yyyy-mm-dd') admin_approved_on, "
+    + "to_char(i.employment_begin_on, 'yyyy-mm-dd') employment_begin_on, "
+    + "to_char(i.colloquium_presentation_on, 'yyyy-mm-dd') colloquium_presentation_on, "
+    + "to_char(i.completed_on, 'yyyy-mm-dd') completed_on, "
+    + "to_char(i.cancelled_on, 'yyyy-mm-dd') cancelled_on "
     + "from internships i join users u "
     + "on i.student_user_id = u.id "
     + "where i.id = $1 "
 
 var qUpdateInternship = ""
     + "update internships set "
-    + "project_title = $1,  "
-    + "project_description = $2,  "
-    + "university_student_number = $3,  "
-    + "number_of_credits = $4,  "
-    + "quarter = $5,  "
-    + "year = $6,  "
-    + "sponsor_company = $7,  "
-    + "sponsor_address = $8  "
-    + "where id = $9  "
-    + "and student_user_id = $10 "
-    + "and status in ('pending', 'ready') ";
+    + "project_title = $1, "
+    + "project_description = $2, "
+    + "university_student_number = $3, "
+    + "number_of_credits = $4, "
+    + "quarter = $5, "
+    + "year = $6, "
+    + "sponsor_company = $7, "
+    + "sponsor_address = $8, "
+    + "employment_begin_on = $9, "
+    + "colloquium_presentation_on = $10 "
+    + "where id = $11 "
+    + "and student_user_id = $12 "
+    + "and status in ('pending', 'ready', 'approved') ";
 
 var qUpdateInternshipCancelled = ""
     + "update internships set "
@@ -110,6 +116,11 @@ var qGetParticipants = ""
     + " from users u join participants p on u.id = p.user_id " 
     + " where p.internship_id = $1 " 
     + " order by p.requested_on ";
+
+var qClearApproved = ""
+    + "update internships "
+    + "set admin_approved_on = null "
+    + "where id = $1 "
 
 var qRemoveParticipant = ""
     + "delete from participants "
@@ -444,7 +455,7 @@ exports.getInternship = function(req, res, next) {
                 // maybe, now we check to make sure user is associated with this internship, otherwise send back to list eh?
                 client.query(qGetActivities, a, function(err, result) {
                     req.session.internship.activities = result.rows;
-                    
+
                     next();
                 });
             });
@@ -504,6 +515,8 @@ exports.updateInternship = function(req, res, next) {
             d.internship["year"],
             d.internship["sponsor_company"],
             d.internship["sponsor_address"],
+            d.internship["employment_begin_on"] || null,
+            d.internship["colloquium_presentation_on"] || null,
             d.internship["id"],
             d["id"] ];
          
@@ -594,10 +607,13 @@ exports.removeParticipant = function(req, res, next) {
     var a = [
         d.participant_id ]; 
 
-    client.query(qRemoveParticipant, a, function(err, result) {
-        req.flash("info", "participant removed!");
-        checkSetInternshipStatus(d);
-        next();
+    client.query(qClearApproved, [d.internship_id], function(err, result) {
+        if (err) { console.log(err) };
+        client.query(qRemoveParticipant, a, function(err, result) {
+            req.flash("info", "participant removed!");
+            checkSetInternshipStatus(d);
+            next();
+        });
     });
 };
 

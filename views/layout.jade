@@ -3,15 +3,35 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui-1.8.18.custom.css')
+    link(rel='stylesheet', href='/stylesheets/sites.css')
     script(src='/javascripts/jquery-1.7.1.js')
     script(src='/javascripts/jquery-ui-1.8.18.custom.min.js')
     
-  div#toplinks
-    - if (user) 
-      a(href='/logout') logout
-    - else
-      a(href='/login') login
-      &nbsp;
-      a(href='/register') register
-    
-  body!= body
+  div#wrapper
+    div#mainnav
+      ul
+        li
+        - if (user) 
+          a(href='/logout') logout
+        - else
+          a(href='/login') login
+        li
+          a(href='/register') register
+    p#logo
+      img(alt="University of Washington Tacoma", src="/images/w-banner.png")
+      img(class="small-uwt", alt="University of Washington Tacoma", src="/images/logo-uw-tacoma-small.png")
+      a(href="http://www.tacoma.uw.edu/institute-technology/completing-internship", class="school-name", title="University of Washington Tacoma") Institute of Technology
+    div#bottomheader
+    div#main
+      body!= body
+    div#error
+    br
+    br
+    div#footer
+      div(style="float:left;width:48%; display:block; padding-left:2px;") For problems associated with this site
+      div(style="float:right;width:48%; display:block; padding-right:2px") University of Washington Tacoma
+      div(style="float:left;clear:left; width:48%; display:block; padding-left:2px;") please contact the site administrator
+      div(style="float:right;clear:right;width:48%; display:block; padding-right:2px") 1900 Commerce Street
+      div(style="float:left;clear:left; width:48%; display:block; padding-left:2px;") Andrew Fry at andfry@u.washington.edu
+      div(style="float:right;clear:right;width:48%; display:block; padding-right:2px") Tacoma,WA 98402
+      div(style="clear:both")

@@ -1,0 +1,122 @@
+﻿#mainnav ul {
+    list-style: none outside none;
+}
+#mainnav
+{
+	height:20px;
+	background:black;
+    width:100%;
+	z-index:2;
+	position: relative;
+	border-style:none;
+	text-align: right;
+	
+	
+}
+#mainnav ul li {
+    border-right: 1px solid #6F6F6F;
+    display:inline;
+    font-size: 14px;
+    line-height: 10px;
+    margin-left: 10px;
+    padding-right: 10px;
+    position: relative;
+    
+    
+}
+
+#mainnav li a
+{
+    color:White;
+    font-weight:bold;
+    text-decoration:none;
+}
+#mainnav li a:active
+{
+    color:Lime;
+    font-weight:bold;
+}
+#mainnav li a:hover
+{
+    background-color:Blue;
+    font-weight:bold;
+}
+#mainnav li a:visited
+{
+    color:White;
+    font-weight:bold;
+}
+#wrapper
+{
+	background:#EDEEF1;
+	z-index:0;
+	margin-right:auto;
+	margin-left:auto;
+	width:1000px;
+	border-radius: 4px 0 0 0;
+    -webkit-border-radius: 4px 0 0 0;
+    -moz-border-radius: 4px 0 0 0;
+}
+#logo
+{
+	position:relative;
+	z-index:11;
+	margin:0,auto;
+	width:1000px;
+}
+#logo img{
+	position:absolute;
+	top:-35px;
+	left: 30px;
+}
+#logo img.small-uwt{
+	left:110px;
+	top: 30px;
+	
+}
+#logo .school-name {
+    color: #A1A3AA;
+    display: block;
+    font: 20px/20px 'Times New Roman',Arial,sans-serif;
+    left: 110px;
+    position: absolute;
+    text-indent: 0;
+    text-transform: uppercase;
+    top: 55px;
+    z-index: 11;
+    text-decoration:none;
+}
+#bottomheader{
+	
+	height:20px;
+	background:#483965;
+    width:100%;
+	z-index:2;
+	position: relative;
+	top:100px;
+}#footer {
+    /*background-color: #fff;*/
+    top:125px;
+    position:relative;
+    width:1000px;
+    background-color:Black;
+    /*color: #999;*/
+    color:White;
+    padding: 10px 0;
+    text-align: center;
+    line-height: normal;
+    margin: 0 0 30px 0;
+    font-size: .9em;
+    border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+}
+#main {
+    position:relative;
+    top:125px;
+    padding: 30px 30px 15px 30px;
+    background-color: #fff;
+    border-radius: 4px 0 0 0;
+    -webkit-border-radius: 4px 0 0 0;
+    -moz-border-radius: 4px 0 0 0;
+}

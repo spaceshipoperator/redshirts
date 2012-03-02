@@ -251,7 +251,11 @@ var checkInternshipStatus = function(d) {
     // ca is cancelled 
     var ca = false;
 
-    // 
+    // md is milestone due
+    var md = false;
+
+    // eb is employment begin
+    var eb = false;
 
     // are we ready
     if (d.participants) {

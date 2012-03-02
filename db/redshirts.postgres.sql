@@ -153,5 +153,12 @@ references activities (id);
 insert into users (role, email_address, password, last_name, first_name) 
 values ('admin', 'iadmin@uw.edu', 'secret', 'Administrator', 'Internship');
 
+grant select, insert, update, delete on comments to captain; 
+grant select, insert, update, delete on activities to captain;
+grant select, insert, update, delete on participants to captain;
+grant select, insert, update, delete on internships to captain;
+grant select, insert, update, delete on users to captain;
+
+
 
 

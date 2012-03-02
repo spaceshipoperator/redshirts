@@ -99,5 +99,5 @@ app.post("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, d
     res.redirect("/" + req.session.user.id + "/intern/" + req.params["internId"] + "/activity/" + req.params["activityId"]);
 });
 
-app.listen(3000);
+app.listen(3003);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

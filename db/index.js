@@ -431,10 +431,14 @@ exports.getInternships = function(req, res, next) {
 
     client.query(q, a, function(err, result) {
         //if (err) { console.log(err) };
-        req.session.internships = result.rows;
+        if (err) { console.log(err) };
+        if (result.rows) { 
+            req.session.internships = result.rows;
+        } else {
+            req.session.internships = [];
+        }
         next();
     });
-    
 };
 
 exports.createInternship = function(req, res, next) {

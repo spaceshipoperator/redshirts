@@ -324,6 +324,23 @@ var checkSetInternshipStatus = function(d) {
     });
 };
 
+var validateUser = function(req, res, next) {
+    var u = req.session.user.id;
+    var d = req.session.internship;
+    var p = [d.student_user_id];
+
+    for (var i = 0; i < d.participants.length; i++) {
+        p.push(d.participants[i].id);
+    };
+
+    if (p.indexOf(u) == -1) {
+        //tsk tsk...trying to look at something you ought not?
+        res.redirect("/logout");
+    } else {
+        next();
+    }
+};
+
 // methods exposed to app
 exports.getUser = function(req, res, next){
     var d = req.body.user;
@@ -456,7 +473,7 @@ exports.getInternship = function(req, res, next) {
                 client.query(qGetActivities, a, function(err, result) {
                     req.session.internship.activities = result.rows;
 
-                    next();
+                    validateUser(req, res, next);
                 });
             });
         } else {
@@ -466,6 +483,7 @@ exports.getInternship = function(req, res, next) {
 
     });
 };
+
 
 exports.updateInternship = function(req, res, next) {
     var d = req.session.user;
@@ -567,17 +585,18 @@ exports.getParticipant = function(req, res, next) {
 };
 
 exports.requestParticipant = function(req, res, next) {
+    var i = req.session.internship;
     var d = req.body.requestParticipant;
     
     d.requested_on = new Date().toYMD();
     
     var shasum = crypto.createHash("sha1");
     
-    shasum.update(d["internship_id"] + d["email_address"] + d["requested_on"]);
+    shasum.update(i["id"] + d["email_address"] + d["requested_on"]);
     d.request_hash = shasum.digest("hex");
 
     var a = [
-        d["internship_id"],
+        i["id"],
         d["id"],
         d["request_hash"],
         d["requested_on"] ];

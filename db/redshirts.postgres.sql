@@ -22,11 +22,6 @@ on database
   redshirts 
 from captain;
 
-drop role if exists captain;
-
-create role captain 
-with login encrypted password 'kirk';
-
 grant connect 
 on database redshirts 
 to captain;

@@ -51,9 +51,9 @@
    - [X] display most recent posted on and contributor in activity list
    - [X] remove participant should clear approved_on
    - [X] display employment begin date for approved internship
+   - [ ] make sure user is associated with internship before edit/review display 
    - [ ] if "employment begin date" is today or earlier status should be "in progress"
    - [ ] if activity "scheduled on" upcoming within two days, status should be "milestone due"
-   - [ ] make sure user is associated with internship before edit/review display 
    - [ ] need to get message text included in participant request email
    - [ ] html layout and css 
    - [ ] content baby

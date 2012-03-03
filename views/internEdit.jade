@@ -9,7 +9,15 @@ script
         $('[name="editIntern[employment_begin_on]"]').val(dateText);
       }
     });
+    
+    $('#presentationOnDatePicker').datepicker({
+      dateFormat: 'yy-mm-dd',
+      onSelect: function(dateText, inst) {
+        $('[name="editIntern[colloquium_presentation_on]"]').val(dateText);
+      }
+    });
 
+    $("#presentationOnDatePicker").attr("readOnly", true);
     $("#employmentBeginOnDatePicker").attr("readOnly", true);
   });
 
@@ -179,7 +187,7 @@ div#activities
       th(align="left", style="width:20%;")
         label latest\ contributor\:
       th(align="left", style="width:20%;")
-        label latest\ edit\:
+        label latest\ post\:
       - each activity in internship.activities
         tr
           td

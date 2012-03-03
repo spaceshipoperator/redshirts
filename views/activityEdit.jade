@@ -5,14 +5,14 @@ script
     $('#scheduledOnDatePicker').datepicker({
       dateFormat: 'yy-mm-dd',
       onSelect: function(dateText, inst) {
-        $('[name="activityNew[scheduled_on]"]').val(dateText);
+        $('[name="activityEdit[scheduled_on]"]').val(dateText);
       }
     });
 
     $('#completedOnDatePicker').datepicker({
       dateFormat: 'yy-mm-dd',
       onSelect: function(dateText, inst) {
-        $('[name="activityNew[completed_on]"]').val(dateText);
+        $('[name="activityEdit[completed_on]"]').val(dateText);
       }
     });
 
@@ -35,6 +35,7 @@ div#messages
 
   form#activity(method="post")
     input(name="activityEdit[activity_id]", value=activity.id, type="hidden")
+    input(name="activityEdit[internship_id]", value=internship.id, type="hidden")
     - if (!(checkDisabled))
       input(type="submit", name="operation", value="save")
       &nbsp;

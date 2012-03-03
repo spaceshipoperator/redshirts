@@ -69,7 +69,7 @@ app.post("/:userId/intern/new", db.getUser, db.createInternship, function(req, r
 });
 
 app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.internEdit);
-app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, function(req, res) {
+app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternship, function(req, res) {
     redirectInternEdit(req, res);
 });
 
@@ -85,12 +85,12 @@ app.get("/:userId/intern/:internId/remove/:participantId", db.getUser, db.getInt
 app.get("/accept/:requestHash", db.acceptParticipant, routes.thanksParticipant);
 
 app.get("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship, routes.activityNew);
-app.post("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship, db.createActivity, function(req, res) {
+app.post("/:userId/intern/:internId/activity/new", db.getUser, db.getInternship, db.createActivity, db.getInternship, function(req, res) {
     redirectInternEdit(req, res);
 });
 
 app.get("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.getActivity, routes.activityEdit);
-app.post("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.editActivity, function(req, res) {
+app.post("/:userId/intern/:internId/activity/:activityId", db.getUser, db.getInternship, db.editActivity, db.getInternship, function(req, res) {
     redirectInternEdit(req, res);
 });
 

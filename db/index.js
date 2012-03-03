@@ -73,11 +73,11 @@ var qUpdateInternship = ""
     + "year = $6, "
     + "sponsor_company = $7, "
     + "sponsor_address = $8, "
-    + "employment_begin_on = $9, "
-    + "colloquium_presentation_on = $10 "
+    + "employment_begin_on = to_date($9, 'yyyy-mm-dd'), "
+    + "colloquium_presentation_on = to_date($10, 'yyyy-mm-dd') "
     + "where id = $11 "
     + "and student_user_id = $12 "
-    + "and status in ('pending', 'ready', 'approved') ";
+    + "and status not in ('cancelled', 'completed') ";
 
 var qUpdateInternshipCancelled = ""
     + "update internships set "
@@ -168,12 +168,6 @@ var qGetActivities = ""
 
 // join to get most latest edit and contributor
 // rather than complicated sql here, create a view to support that
-var qGetActivity = ""
-    + "select id, description, " 
-    + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
-    + "to_char(completed_on, 'yyyy-mm-dd') completed_on "
-    + "from activities where id = $1 ";
-
 var qGetActivity = ""
     + "select id, description, " 
     + "to_char(scheduled_on, 'yyyy-mm-dd') scheduled_on, "
@@ -271,18 +265,7 @@ var checkInternshipStatus = function(d) {
     // sa is sponsor accepted
     var sa = false;
 
-    // ap is admin approved
-    var ap = false;
-
-    // ca is cancelled 
-    var ca = false;
-
-    // ad is activity due
-    var ad = false;
-
-    // eb is employment begin
-    var eb = false;
-
+    // t is today
     var t = new Date();
 
     // are we ready
@@ -332,7 +315,7 @@ var checkInternshipStatus = function(d) {
     if (["approved", "in progress"].indexOf(s) && d.colloquium_presentation_on) {
         // if colloquium presentation on or before today
         var c = new Date(d.colloquium_presentation_on);
-        if (t < c) {
+        if (t > c) {
             s = "completed";
         }
     };
@@ -549,6 +532,7 @@ exports.getInternship = function(req, res, next) {
 exports.updateInternship = function(req, res, next) {
     var d = req.session.user;
     d.internship = req.body.editIntern;
+    console.log(JSON.stringify(d));
     // need internship_id for check/set status...bah
     d.internship_id = d.internship["id"];
     var a = [];
@@ -598,7 +582,11 @@ exports.updateInternship = function(req, res, next) {
             d.internship["colloquium_presentation_on"] || null,
             d.internship["id"],
             d["id"] ];
-         
+
+        console.log("foobar");
+        console.log(JSON.stringify(d));
+        console.log(a);
+        
         client.query(qUpdateInternship, a, function(err, result) {
             if (err) {
               if (err) { console.log(err) };
@@ -822,7 +810,8 @@ exports.editActivity = function(req, res, next) {
         
         client.query(qUpdateActivitySave, a, function(err, result) {
             if (err) { console.log(err) };
-            //checkSetInternshipStatus(d);
+            d["internship_id"] = req.session.internship.id;
+            checkSetInternshipStatus(d);
             req.flash("info", "activity saved!");
             next();
         });
@@ -831,7 +820,8 @@ exports.editActivity = function(req, res, next) {
             if (err) { console.log(err) };
             client.query(qUpdateActivityDelete, [a[3]], function(err, result) {
                 if (err) { console.log(err) };
-                //checkSetInternshipStatus(d);
+                d["internship_id"] = req.session.internship.id;
+                checkSetInternshipStatus(d);
                 req.flash("info", "activity deleted!");
                 next();
             });

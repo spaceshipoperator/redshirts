@@ -257,6 +257,7 @@ var activityDue = function(d) {
             }
         };
     };
+    return r;
 };
 
 var checkInternshipStatus = function(d) {
@@ -276,7 +277,7 @@ var checkInternshipStatus = function(d) {
     // ca is cancelled 
     var ca = false;
 
-    // ad is milestone due
+    // ad is activity due
     var ad = false;
 
     // eb is employment begin
@@ -317,9 +318,6 @@ var checkInternshipStatus = function(d) {
     if (s == "approved" && d.employment_begin_on) {
         // if employment begin on or before today
         var c = new Date(d.employment_begin_on);
-        console.log("foooo");
-        console.log(c);
-        console.log(t);
         if (t > c) {
             s = "in progress";
         };

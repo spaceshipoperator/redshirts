@@ -110,12 +110,12 @@ var qInsertParticipant = ""
     + "returning id ";
 
 var qGetParticipants = ""
-    + " select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
-    + " to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
-    + " to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
-    + " from users u join participants p on u.id = p.user_id " 
-    + " where p.internship_id = $1 " 
-    + " order by p.requested_on ";
+    + "select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
+    + "to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
+    + "to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
+    + "from users u join participants p on u.id = p.user_id " 
+    + "where p.internship_id = $1 " 
+    + "order by p.requested_on ";
 
 var qClearApproved = ""
     + "update internships "
@@ -205,6 +205,9 @@ var qInsertComment = ""
     + "values ($1, $2, to_date($3, 'yyyy-mm-dd'), $4) " 
     + "returning id ";
 
+var qGetAdminIds = ""
+    + "select id from users where role = 'admin' ";
+
 // get activity comments
 
 // lil helpers
@@ -234,6 +237,28 @@ var killSession = function(req, res) {
     res.redirect("/login");
 };
 
+var activityDue = function(d) {
+    // one day in milliseconds...used within a few helper functions
+    var od = 1000*60*60*24; 
+    // today
+    var t = new Date();
+    // two days from now
+    var dd = new Date(t.getTime() + 2*od);
+
+    var r = false;
+
+    for (var i = 0; i < d.activities.length; i++) {
+        var co = d.activities[i].completed_on;
+        var so = d.activities[i].scheduled_on;
+        if (so && !(co)) {
+            var cd = new Date(so);
+            if (cd < dd) {
+                r = true;
+            }
+        };
+    };
+};
+
 var checkInternshipStatus = function(d) {
     // d is my internship
     // s is my status
@@ -251,11 +276,13 @@ var checkInternshipStatus = function(d) {
     // ca is cancelled 
     var ca = false;
 
-    // md is milestone due
-    var md = false;
+    // ad is milestone due
+    var ad = false;
 
     // eb is employment begin
     var eb = false;
+
+    var t = new Date();
 
     // are we ready
     if (d.participants) {
@@ -287,9 +314,31 @@ var checkInternshipStatus = function(d) {
     };
 
     // are we in progress
+    if (s == "approved" && d.employment_begin_on) {
+        // if employment begin on or before today
+        var c = new Date(d.employment_begin_on);
+        console.log("foooo");
+        console.log(c);
+        console.log(t);
+        if (t > c) {
+            s = "in progress";
+        };
+    };
+
     // do we have a milestone due
-    // are we completed
+    if (["ready", "approved", "in progress"].indexOf(s) && activityDue(d)) {
+        s = "activity due";
+    }
     
+    // are we completed
+    if (["approved", "in progress"].indexOf(s) && d.colloquium_presentation_on) {
+        // if colloquium presentation on or before today
+        var c = new Date(d.colloquium_presentation_on);
+        if (t < c) {
+            s = "completed";
+        }
+    };
+
     // are we cancelled
     if (d.cancelled_on) {
         s = "cancelled";
@@ -333,16 +382,22 @@ var validateUser = function(req, res, next) {
     var d = req.session.internship;
     var p = [d.student_user_id];
 
-    for (var i = 0; i < d.participants.length; i++) {
-        p.push(d.participants[i].id);
-    };
-
-    if (p.indexOf(u) == -1) {
+    client.query(qGetAdminIds, function(err, result) {
+        for (var i = 0; i < result.rows.length; i++) {
+            p.push(result.rows[i].id);
+        };
+            
+        for (var i = 0; i < d.participants.length; i++) {
+            p.push(d.participants[i].id);
+        };
+        
+        if (p.indexOf(u) == -1) {
         //tsk tsk...trying to look at something you ought not?
-        res.redirect("/logout");
-    } else {
-        next();
-    }
+            res.redirect("/logout");
+        } else {
+            next();
+        };
+    });
 };
 
 // methods exposed to app
@@ -551,6 +606,7 @@ exports.updateInternship = function(req, res, next) {
               if (err) { console.log(err) };
               req.flash('error', "internship *not* saved!");
             } else {
+              checkSetInternshipStatus(d);
               req.flash('info', "internship saved!");
             }
             next();

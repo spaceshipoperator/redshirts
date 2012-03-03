@@ -1,5 +1,5 @@
 exports.index = function(req, res){
-    res.render("index", { title: "Express", results: req.user })
+    res.render("index", { title: "UW Tacoma Internships" })
 };
 
 exports.register = function(req, res){

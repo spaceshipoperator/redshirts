@@ -1,14 +1,25 @@
 script
   $('document').ready(function(){
-    $('#scheduledOnDatePicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      defaultDate: +1,
-      onSelect: function(dateText, inst) {
-        $('[name="activityNew[scheduled_on]"]').val(dateText);
-      }
-    });
+      $('#scheduledOnDatePicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          defaultDate: +1,
+          onSelect: function(dateText, inst) {
+              $('[name="activityNew[scheduled_on]"]').val(dateText);
+          }
+      });
 
-    $("#scheduledOnDatePicker").attr("readOnly", true);
+      $("#scheduledOnDatePicker").attr("readOnly", true);
+
+      $("#activity").validate({
+          rules: {
+              "activityNew[scheduled_on]": "required",
+              "activityNew[description]": "required"
+          },
+          messages: {
+              "activityNew[scheduled_on]": "please select a scheduled on date",
+              "activityNew[description]": "please provide a description"
+          }
+      });
   });
 
 h2= title

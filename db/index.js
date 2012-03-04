@@ -24,7 +24,8 @@ var qInsertNewUser = ""
 
 var qGetStudentInternships = ""
     + "select id, student_user_id, status, project_title "
-    + "from internships where student_user_id = $1 ";
+    + "from internships where student_user_id = $1 "
+    + "and status not in ('cancelled') ";
 
 var qGetAllActiveInternships = ""
     + "select i.id, i.student_user_id, i.status, i.project_title, "
@@ -41,7 +42,8 @@ var qGetParticipantInternships = ""
     + "join participants p "
     + "on i.id = p.internship_id "
     + "where p.accepted_on is not null "
-    + "and p.user_id = $1 ";
+    + "and p.user_id = $1 "
+    + "and i.status not in ('cancelled') ";
 
 var qInsertInternship = ""
     + "insert into internships "

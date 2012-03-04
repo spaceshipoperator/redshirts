@@ -1,3 +1,15 @@
+script
+  $('document').ready(function(){
+      $("#comment").validate({
+          rules: {
+              "commentNew[comment]": "required"
+          },
+          messages: {
+              "commentNew[comment]": "please provide a comment"
+          }
+      });
+  });
+
 h2= title
 
 div#messages

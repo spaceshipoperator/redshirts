@@ -1,3 +1,28 @@
+script
+  $('document').ready(function() {
+      $("#requestParticipant").validate({
+          rules: {
+              "requestParticipant[first_name]": "required",
+              "requestParticipant[last_name]": "required",
+              "requestParticipant[email_address]": {
+                  required: true,
+                  email: true
+              },
+              "requestParticipant[message]": "required"
+          },
+          messages: {
+              "requestParticipant[first_name]": "please enter the participant's first name",
+              "requestParticipant[last_name]": "please enter the participant's last name",
+              "requestParticipant[email_address]": "please enter the participant's valid email address",
+              "requestParticipant[message]": "please enter a message"
+          }
+      });
+  });
+
+div#links
+  a(href="/#{user.id}/intern/#{internship.id}") back to internship
+  p
+  
 h2= title
 
 div#messages
@@ -16,6 +41,8 @@ div#messages
             - var a = ['advisor', 'sponsor']
             each v in a
               option(value=v)=v
+              
+    table
       tr
         td
           label first\ name:

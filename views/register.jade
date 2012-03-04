@@ -1,7 +1,45 @@
+script
+  $('document').ready(function() {
+      // validate signup form on keyup and submit
+      $("#registerForm").validate({
+          rules: {
+              "newUser[first_name]": "required",
+              "newUser[last_name]": "required",
+              "newUser[password]": {
+                  required: true,
+                  minlength: 5
+              },
+              "newUser[confirm_password]": {
+                  required: true,
+                  minlength: 5,
+                  equalTo: "#password"
+              },
+              "newUser[email_address]": {
+                  required: true,
+                  email: true
+              }
+          },
+          messages: {
+              "newUser[first_name]": "please enter your first name",
+              "newUser[last_name]": "please enter your last name",
+              "newUser[password]": {
+                  required: "please provide a password",
+                  minlength: "your password must be at least 5 characters long"
+              },
+              "newUser[confirm_password]": {
+                  required: "please provide a password",
+                  minlength: "your password must be at least 5 characters long",
+                  equalTo: "please enter the same password as above"
+              },
+              "newUser[email_address]": "please enter a valid email address"
+          }
+      });
+  });
+
 h1= title
 
 div#register
-  form(method="post")
+  form#registerForm(method="post")
     input(name='newUser[role]', value="student", type="hidden")
     table
       tr
@@ -23,7 +61,7 @@ div#register
         td
           label password\:
         td
-          input(name='newUser[password]', type="password")
+          input#password(name='newUser[password]', type="password")
       tr
         td
           label confirm\ password\:

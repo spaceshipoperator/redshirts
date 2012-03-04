@@ -2,22 +2,33 @@
 
 script
   $('document').ready(function(){
-    $('#scheduledOnDatePicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      onSelect: function(dateText, inst) {
-        $('[name="activityEdit[scheduled_on]"]').val(dateText);
-      }
-    });
+      $('#scheduledOnDatePicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(dateText, inst) {
+              $('[name="activityEdit[scheduled_on]"]').val(dateText);
+          }
+      });
 
-    $('#completedOnDatePicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      onSelect: function(dateText, inst) {
-        $('[name="activityEdit[completed_on]"]').val(dateText);
-      }
-    });
+      $('#completedOnDatePicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(dateText, inst) {
+              $('[name="activityEdit[completed_on]"]').val(dateText);
+          }
+      });
 
-    $("#scheduledOnDatePicker").attr("readOnly", true);
-    $("#completedOnDatePicker").attr("readOnly", true);
+      $("#scheduledOnDatePicker").attr("readOnly", true);
+      $("#completedOnDatePicker").attr("readOnly", true);
+
+      $("#activity").validate({
+          rules: {
+              "activityEdit[scheduled_on]": "required",
+              "activityEdit[description]": "required"
+          },
+          messages: {
+              "activityEdit[scheduled_on]": "please select a scheduled on date",
+              "activityEdit[description]": "please provide a description"
+          }
+      });
   });
 
 p

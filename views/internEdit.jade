@@ -3,27 +3,44 @@
 - var checkAdvisorRequested = internship.advisor_requested_on;
 script
   $('document').ready(function(){
-    $('#employmentBeginOnDatePicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      onSelect: function(dateText, inst) {
-        $('[name="editIntern[employment_begin_on]"]').val(dateText);
-      }
-    });
+      $('#employmentBeginOnDatePicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(dateText, inst) {
+              $('[name="editIntern[employment_begin_on]"]').val(dateText);
+          }
+      });
     
-    $('#presentationOnDatePicker').datepicker({
-      dateFormat: 'yy-mm-dd',
-      onSelect: function(dateText, inst) {
-        $('[name="editIntern[colloquium_presentation_on]"]').val(dateText);
-      }
-    });
+      $('#presentationOnDatePicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(dateText, inst) {
+              $('[name="editIntern[colloquium_presentation_on]"]').val(dateText);
+          }
+      });
 
-    $("#presentationOnDatePicker").attr("readOnly", true);
-    $("#employmentBeginOnDatePicker").attr("readOnly", true);
+      $("#presentationOnDatePicker").attr("readOnly", true);
+      $("#employmentBeginOnDatePicker").attr("readOnly", true);
+  
+      $("#internshipForm").validate({
+          rules: {
+              "editIntern[university_student_number]": "required",
+              "editIntern[sponsor_company]": "required",
+              "editIntern[sponsor_address]": "required",
+              "editIntern[project_title]": "required",
+              "editIntern[project_description]": "required"
+          },
+          messages: {
+              "editIntern[university_student_number]": "please enter your student number",
+              "editIntern[sponsor_company]": "please enter your sponsor company",
+              "editIntern[sponsor_address]": "please enter the sponsor company address",
+              "editIntern[project_title]": "please enter your project title",
+              "editIntern[project_description]": "please enter a project description"
+          }
+      });
   });
 
 p
 div#links
-  a(href="/#{user.id}/intern/list") list
+  a(href="/#{user.id}/intern/list") back\ to\ list
   p 
   
 - if (checkDisabled)

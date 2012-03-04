@@ -1,3 +1,23 @@
+script
+  $('document').ready(function() {
+      $("#internshipForm").validate({
+          rules: {
+              "newIntern[university_student_number]": "required",
+              "newIntern[sponsor_company]": "required",
+              "newIntern[sponsor_address]": "required",
+              "newIntern[project_title]": "required",
+              "newIntern[project_description]": "required"
+          },
+          messages: {
+              "newIntern[university_student_number]": "please enter your student number",
+              "newIntern[sponsor_company]": "please enter your sponsor company",
+              "newIntern[sponsor_address]": "please enter the sponsor company address",
+              "newIntern[project_title]": "please enter your project title",
+              "newIntern[project_description]": "please enter a project description"
+          }
+      });
+  });
+
 h1= title
 
 div#links
@@ -5,7 +25,7 @@ div#links
   p 
 
 div#internship
-  form(method="post")
+  form#internshipForm(method="post")
     input(name="newIntern[student_user_id]", value=user.id, type="hidden")
     input(name="newIntern[status]", value="pending", type="hidden")
     input(type="submit", value="create")

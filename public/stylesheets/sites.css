@@ -116,8 +116,17 @@
     position:relative;
     top:125px;
     padding: 30px 30px 15px 30px;
-    background-color: #fff;
+    background: #edeef1;
     border-radius: 4px 0 0 0;
     -webkit-border-radius: 4px 0 0 0;
     -moz-border-radius: 4px 0 0 0;
 }
+
+body {
+    background: #edeef1;
+    font-size: 14px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    line-height: 20px;
+    min-width: 960px;
+}
+

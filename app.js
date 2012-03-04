@@ -72,7 +72,8 @@ app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.intern
 app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternship, function(req, res) {
     redirectInternEdit(req, res);
 });
-app.get("/", routes.Index);
+
+app.get("/", routes.index);
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
 app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.getInternship, db.requestParticipant, db.sendRequest, db.getInternship, function(req, res) {

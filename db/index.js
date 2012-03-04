@@ -31,7 +31,7 @@ var qGetAllActiveInternships = ""
     + "u.first_name || ' ' || u.last_name student_name "
     + "from internships i join users u "
     + "on i.student_user_id = u.id "
-    + "where i.status in ('ready', 'approved', 'in progress', 'milestone due') "
+    + "where i.status in ('ready', 'approved', 'in progress', 'activity due') "
 
 var qGetParticipantInternships = ""
     + "select i.id, i.student_user_id, i.status, i.project_title, "
@@ -843,4 +843,11 @@ exports.createComment = function(req, res, next) {
         next();
     });
 
+};
+
+exports.checkSendReminders = function() {
+    // get all active internships from db
+    // send email to advisor and student
+    // about inter
+    console.log("aaarrhhhggg");
 };

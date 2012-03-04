@@ -55,16 +55,16 @@
    - [X] if activity "scheduled on" upcoming within two days, status should be "milestone due"
    - [X] if "employment begin date" is today or earlier status should be "in progress"
    - [X] html layout and css 
-   - [ ] add clientside form validation for required fields and such
+   - [X] add clientside form validation for required fields and such
+   - [X] clean up background and fonts
+   - [ ] password recovery..
+   - [ ] hash password clientside (and compare with confirmation) at registration
    - [ ] email reminders for upcoming scheduled activities
    - [ ] need to get message text included in participant request email, some sane defaults for activities too
-   - [ ] clean up background and fonts
    - [ ] content baby (home, faq, getting started)
-   - [ ] include hints based on status, ie if pending "request an advisor and a sponsor...", 
    - [ ] require four scheduled activities before "ready"
-   - [ ] hash password clientside (and compare with confirmation) at registration
-   - [ ] lost password, reset recovery..
    - [ ] generate report (pdf?)
    - [ ] consider text box for submitting "entry code" on approve
+   - [ ] include hints based on status, ie if pending "request an advisor and a sponsor...", 
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model..next release of app?)
 

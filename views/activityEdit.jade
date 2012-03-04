@@ -37,9 +37,9 @@ div#links
   p
   
 - if (checkDisabled)
-  h2 Review Activity\!
+  h2(class="title") Review Activity\!
 - else
-  h2= title
+  h2(class="title")= title
 
 div#messages
   p= error
@@ -73,7 +73,7 @@ div#messages
           textarea(name="activityEdit[description]", disabled=checkDisabled, rows=10, cols=45)=activity.description
           
 div#comments
-  h3 comments
+  h3(class="title") comments
   p
   a(href="/#{user.id}/intern/#{internship.id}/activity/#{activity.id}/comment") new\ comment
   p

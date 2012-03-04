@@ -2,3 +2,4 @@ tmp/*
 node_modules/*
 public/javascripts/jquery*
 public/stylesheets/smoothness/*
+public/stylesheets/font/*

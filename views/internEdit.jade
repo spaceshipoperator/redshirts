@@ -44,9 +44,9 @@ div#links
   p 
   
 - if (checkDisabled)
-  h2 Review Internship\!
+  h2(class="title") Review Internship\!
 - else
-  h2= title
+  h2(class="title")= title
 
 div#messages
   p= error
@@ -151,7 +151,7 @@ div#internship
           textarea(name='editIntern[project_description]', disabled=checkDisabled, rows=10, cols=45)= internship.project_description
 
 div#participants
-  h3 participants
+  h3(class="title") participants
   - if (!(checkDisabled))
     p
     a(href="/#{user.id}/intern/#{internship.id}/request") request\ participant
@@ -188,7 +188,7 @@ div#participants
               a(href="/#{user.id}/intern/#{internship.id}/remove/#{participant.id}") X
 
 div#activities
-  h3 activities
+  h3(class="title") activities
   - if (!(checkDisabled))
     p
     a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity

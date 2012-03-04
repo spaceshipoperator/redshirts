@@ -11,18 +11,19 @@ html
     div#mainnav
       ul
         li
-        - if (user) 
-          a(href='/logout') logout
-        - else
-          a(href='/login') login
-          li
-            a(href='/register') register
-        li
           a(href='/home') Home
         li
           a(href='/faq') FAQ
         li
           a(href='/gettingstarted') Getting Started
+        - if (user) 
+          li
+            a(href='/logout') logout
+        - else
+          li
+            a(href='/login') login
+          li
+            a(href='/register') register
     p#logo
       img(alt="University of Washington Tacoma", src="/images/w-banner.png")
       img(class="small-uwt", alt="University of Washington Tacoma", src="/images/logo-uw-tacoma-small.png")

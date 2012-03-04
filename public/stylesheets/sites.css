@@ -70,7 +70,6 @@
 #logo img.small-uwt {
     left:110px;
     top: 30px;
-        
 }
 
 #logo .school-name {
@@ -87,12 +86,12 @@
 }
 
 #bottomheader{
-   height:20px;
-   background:#483965;
-   width:100%;
-   z-index:2;
-   position: relative;
-   top:100px;
+    height:20px;
+    background:#483965;
+    width:100%;
+    z-index:2;
+    position: relative;
+    top:100px;
 }
 
 #footer {

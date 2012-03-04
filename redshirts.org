@@ -52,15 +52,19 @@
    - [X] remove participant should clear approved_on
    - [X] display employment begin date for approved internship
    - [X] make sure user is associated with internship before edit/review display 
-   - [ ] if activity "scheduled on" upcoming within two days, status should be "milestone due"
-   - [ ] if "employment begin date" is today or earlier status should be "in progress"
-   - [ ] need to get message text included in participant request email
-   - [ ] html layout and css 
-   - [ ] content baby
-   - [ ] hash password clientside (and compare with confirmation) at registration
+   - [X] if activity "scheduled on" upcoming within two days, status should be "milestone due"
+   - [X] if "employment begin date" is today or earlier status should be "in progress"
+   - [X] html layout and css 
    - [ ] add clientside form validation for required fields and such
    - [ ] email reminders for upcoming scheduled activities
+   - [ ] need to get message text included in participant request email, some sane defaults for activities too
+   - [ ] clean up background and fonts
+   - [ ] content baby (home, faq, getting started)
+   - [ ] include hints based on status, ie if pending "request an advisor and a sponsor...", 
+   - [ ] require four scheduled activities before "ready"
+   - [ ] hash password clientside (and compare with confirmation) at registration
    - [ ] lost password, reset recovery..
    - [ ] generate report (pdf?)
+   - [ ] consider text box for submitting "entry code" on approve
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model..next release of app?)
 

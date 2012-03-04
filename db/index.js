@@ -110,9 +110,10 @@ var qInsertParticipant = ""
     + "returning id ";
 
 var qGetParticipants = ""
-    + "select u.role, u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
+    + "select p.id, p.user_id, u.role, "
+    + "u.first_name || ' ' || u.last_name as full_name, u.email_address,  " 
     + "to_char(p.requested_on, 'yyyy-mm-dd') as requested_on, " 
-    + "to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on,  p.id "
+    + "to_char(p.accepted_on, 'yyyy-mm-dd') as accepted_on "
     + "from users u join participants p on u.id = p.user_id " 
     + "where p.internship_id = $1 " 
     + "order by p.requested_on ";
@@ -369,7 +370,7 @@ var validateUser = function(req, res, next) {
         };
             
         for (var i = 0; i < d.participants.length; i++) {
-            p.push(d.participants[i].id);
+            p.push(d.participants[i].user_id);
         };
         
         if (p.indexOf(u) == -1) {

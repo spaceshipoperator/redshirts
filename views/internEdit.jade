@@ -186,6 +186,8 @@ div#participants
           - if (!(checkDisabled))
             td
               a(href="/#{user.id}/intern/#{internship.id}/remove/#{participant.id}") X
+  div#helpParticipants
+  p In order to complete the internship process, you will need to have an industry <b>sponsor</b> as well as a faculty <b>advisor</b> agree to participate, use the "request participant" link (above), then fill out and submit the form and an email will be sent to your requested participant with a link that they can click to indicate their acceptance.  Once your sponsor and advisor have accepted, your internship will be "ready" for the program administrator to approve, then you can begin your employment.
 
 div#activities
   h3(class="title") activities
@@ -217,3 +219,6 @@ div#activities
             = activity.latest_contributor
           td
             = activity.latest_edit
+
+  div#helpActivities
+  p In order to complete the internship process, you will need to have at least four meetings with your advisor to discuss your progress periodically throughout the course of the internship, use the "new activity" link above in order to schedule those meetings.  Then you,  your advisor (as well as your sponsor and the program administrator) will be able to record comments toward the completion of those activities.

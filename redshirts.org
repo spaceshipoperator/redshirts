@@ -57,11 +57,11 @@
    - [X] html layout and css 
    - [X] add clientside form validation for required fields and such
    - [X] clean up background and fonts
-   - [ ] password recovery..
-   - [ ] hash password clientside (and compare with confirmation) at registration
-   - [ ] email reminders for upcoming scheduled activities
-   - [ ] need to get message text included in participant request email, some sane defaults for activities too
+   - [X] password recovery..
    - [ ] content baby (home, faq, getting started)
+   - [ ] need to get message text included in participant request email, some sane defaults for activities too
+   - [ ] email reminders for upcoming scheduled activities
+   - [ ] hash password clientside (and compare with confirmation) at registration
    - [ ] require four scheduled activities before "ready"
    - [ ] generate report (pdf?)
    - [ ] consider text box for submitting "entry code" on approve

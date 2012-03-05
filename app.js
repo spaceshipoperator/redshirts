@@ -48,6 +48,12 @@ var redirectInternEdit = function(req, res) {
 };
 
 // Routes
+
+// a few static pages for content
+app.get("/", routes.index);
+app.get("/gettingStarted", routes.gettingStarted);
+app.get("/faq", routes.faq);
+
 app.get("/register", routes.register);
 app.post("/register", db.createUser, db.getUser, db.getInternships, function(req, res) {
     redirectInternList(req, res);
@@ -72,11 +78,6 @@ app.get("/:userId/intern/:internId", db.getUser, db.getInternship, routes.intern
 app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInternship, function(req, res) {
     redirectInternEdit(req, res);
 });
-app.get("/", routes.index);
-
-// TODO: Route pages for Gettingb started abd FAQ 
-app.get("/gettingstarting");
-app.get("/faq");
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
 app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.getInternship, db.requestParticipant, db.sendRequest, db.getInternship, function(req, res) {

@@ -75,8 +75,8 @@ app.post("/:userId/intern/:internId", db.getUser, db.updateInternship, db.getInt
 app.get("/", routes.index);
 
 // TODO: Route pages for Gettingb started abd FAQ 
-app.get("/gettingstarting");
-app.get("/faq");
+app.get("/gettingstarting", routes.gettingstarted);
+app.get("/faq", routes.faq);
 
 app.get("/:userId/intern/:internId/request", db.getUser, db.getInternship, routes.requestParticipant);
 app.post("/:userId/intern/:internId/request", db.getUser, db.getParticipant, db.getInternship, db.requestParticipant, db.sendRequest, db.getInternship, function(req, res) {

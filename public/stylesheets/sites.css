@@ -12,16 +12,17 @@
     position: relative;
     border-style:none;
     text-align: right;
+    top: -5px;
 }
 
 #mainnav ul li {
-    border-right: 1px solid #6F6F6F;
     display:inline;
     font-size: 14px;
     line-height: 10px;
     margin-left: 10px;
     padding-right: 10px;
     position: relative;
+    top: 5px;
 }
 
 #mainnav li a {
@@ -116,7 +117,7 @@
 
 #main {
     position:relative;
-    top:125px;
+    top:70px;
     padding: 30px 30px 15px 30px;
     background: #edeef1;
     border-radius: 4px 0 0 0;
@@ -136,6 +137,5 @@ body {
     font: 28px/35px 'LindenHillRegular', Arial, sans-serif;
     letter-spacing: 0;
     color: #483965; 
-    text-indent: 10px;
 }
 

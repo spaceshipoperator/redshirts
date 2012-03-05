@@ -205,7 +205,26 @@ var qInsertComment = ""
 var qGetAdminIds = ""
     + "select id from users where role = 'admin' ";
 
-// get activity comments
+var qFindUser = ""
+    + "select to_char(current_timestamp, 'yyyymmddhh24miss') current_datetime "
+    + "from users where email_address = $1 "; 
+
+var qInsertPasswordRecovery = ""
+    + "insert into password_recovery "
+    + "(email_address, recovery_hash) " 
+    + "values ($1, $2) "
+    + "returning true ";
+
+var qGetPasswordRecovery = ""
+    + "select email_address "
+    + "from password_recovery "
+    + "where recovery_hash = $1 ";
+
+var qUpdateUserPassword = ""
+    + "update users "
+    + "set password = $1 "
+    + "where email_address = $2 "
+    + "returning true ";
 
 // lil helpers
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
@@ -381,6 +400,37 @@ var validateUser = function(req, res, next) {
         } else {
             next();
         };
+    });
+};
+
+var sendEmail = function(req, res, next) {
+    var transport = nodemailer.createTransport("SMTP",{
+        service: process.env.EMAIL_SENDER_SERVICE,
+        auth: {
+            user: process.env.EMAIL_SENDER_USER,
+            pass: process.env.EMAIL_SENDER_PASSWORD
+        }
+    });
+    
+    var mailOptions = {
+        transport: transport, // transport method to use
+        from: process.env.EMAIL_SENDER_USER, // sender address
+        to: req.email[0], // list of receivers
+        subject: req.email[1], // Subject line
+        text: req.email[2], // plaintext body
+        html: req.email[2] + "<p><p>Thank you! " // html body
+    };
+
+    nodemailer.sendMail(mailOptions, function(error){
+        if(error){
+            console.log(error);
+            req.flash("error", "participant request saved to database, but failed to send email!");
+        } else {
+            console.log("email sent!");
+        };
+        transport.close(); // lets shut down the connection pool
+        
+        next();
     });
 };
 
@@ -693,8 +743,9 @@ exports.sendRequest = function(req, res, next) {
     var d = req.body.requestParticipant;
     var u = req.session.user;
     var r = process.env.EMAIL_RECEIVER || d["email_address"];
+    var s = "please contribute to a successful internship!";
     
-    var message = "Greetings! "
+    var m = "Greetings! "
         + "<p><p> "
         + "If you would kindly like to participate in "
         + u["first_name"] + " " + u["last_name"] + "'s " 
@@ -702,35 +753,10 @@ exports.sendRequest = function(req, res, next) {
         + "<p><p> "
         + "http://" + d["host"] + "/accept/" + d["request_hash"] + " "
         + "<p><p>" ; 
-    
-    var transport = nodemailer.createTransport("SMTP",{
-        service: process.env.EMAIL_SENDER_SERVICE,
-        auth: {
-            user: process.env.EMAIL_SENDER_USER,
-            pass: process.env.EMAIL_SENDER_PASSWORD
-        }
-    });
-    
-    var mailOptions = {
-        transport: transport, // transport method to use
-        from: process.env.EMAIL_SENDER_USER, // sender address
-        to: r, // list of receivers
-        subject: "please contribute to a successful internship!", // Subject line
-        text: message, // plaintext body
-        html: message + "<p><p>Thank you! " // html body
-    };
 
-    nodemailer.sendMail(mailOptions, function(error){
-        if(error){
-            console.log(error);
-            req.flash("error", "participant request saved to database, but failed to send email!");
-        } else {
-            console.log("email sent!");
-        };
-        next();
-        
-        transport.close(); // lets shut down the connection pool
-    });
+    req.email = [r, s, m];
+
+    sendEmail(req, res, next);
 };
 
 exports.acceptParticipant = function(req, res, next) {
@@ -846,6 +872,88 @@ exports.createComment = function(req, res, next) {
         next();
     });
 
+};
+
+exports.sendPasswordResetEmail = function(req, res, next) {
+    var d = req.body.recoverPassword;
+    var a = [
+        d["email_address"] ];
+    
+    req.emailFound = false;
+
+    client.query(qFindUser, a, function(err, result) {
+        if (result.rows) {
+            req.emailFound = true;
+            var c = result.rows[0].current_datetime;
+            var shasum = crypto.createHash("sha1");
+            
+            shasum.update(a[0] + c);
+            a.push(shasum.digest("hex"));
+
+            client.query(qInsertPasswordRecovery, a, function(err, result) {
+                if (err) { console.log(err) };
+                // then send the email with a link /reset_password
+                console.log("send an email now!");
+
+                var r = process.env.EMAIL_RECEIVER || a[0];
+                var s = "reset your password for internship participation";
+                var m = "Greetings! "
+                    + "<p><p> "
+                    + "In order to reset your password to access the internship(s) you are involved in, "
+                    + "<p>"
+                    + "please, confidently click the following hyperlink! "
+                    + "<p><p> "
+                    + "http://" + d["host"] + "/reset_password/" + a[1] + " "
+                    + "<p><p>" ; 
+
+                req.email = [r, s, m];
+
+                sendEmail(req, res, next);
+            });
+        } else {
+            // didn't find email...no biggie.
+            next();
+        }
+    });
+};
+
+exports.getPasswordRecovery = function(req, res, next) {
+    // use the recovery_hash to get the email_address we're working with and stuff that into the request
+    var a = [
+        req.params["recoveryHash"] ];
+
+    client.query(qGetPasswordRecovery, a, function(err, result) {
+        if (err) { console.log(err) };
+        if (result.rows.length > 0) {
+            req.email_address = result.rows[0].email_address;
+            console.log("foo!");
+            console.log(req.email_address);
+            next();
+        } else {
+            next();
+        };
+    });
+};
+
+exports.resetPassword = function(req, res, next) {
+    var d = req.body.resetPassword;
+    var a = [
+        d["password"],
+        d["email_address"] ];
+
+    console.log("foo");
+    console.log(JSON.stringify(d));
+    console.log(a);
+
+    client.query(qUpdateUserPassword, a, function(err, result) {
+        if (err) {
+            console.log(err);
+            req.resetSuccessful = false;
+        } else {
+            req.resetSuccessful = true;
+        };
+        next();
+    });
 };
 
 exports.checkSendReminders = function() {

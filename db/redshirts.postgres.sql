@@ -73,7 +73,7 @@ on sequence internships_id_seq
 to captain;
 
 grant select, update, delete, insert 
-on users 
+on internships 
 to captain;
 
 create table participants (
@@ -90,7 +90,7 @@ on sequence participants_id_seq
 to captain;
 
 grant select, update, delete, insert 
-on users 
+on participants 
 to captain;
 
 create table activities (
@@ -106,7 +106,7 @@ on sequence activities_id_seq
 to captain;
 
 grant select, update, delete, insert 
-on users 
+on activities 
 to captain;
 
 create table comments (
@@ -122,7 +122,16 @@ on sequence comments_id_seq
 to captain;
 
 grant select, update, delete, insert 
-on users 
+on comments 
+to captain;
+
+create table password_recovery (
+  recovery_hash varchar(255) primary key,
+  email_address varchar(255)
+);
+
+grant select, update, delete, insert 
+on password_recovery 
 to captain;
 
 alter table internships 
@@ -152,13 +161,3 @@ references activities (id);
 
 insert into users (role, email_address, password, last_name, first_name) 
 values ('admin', 'iadmin@uw.edu', 'secret', 'Administrator', 'Internship');
-
-grant select, insert, update, delete on comments to captain; 
-grant select, insert, update, delete on activities to captain;
-grant select, insert, update, delete on participants to captain;
-grant select, insert, update, delete on internships to captain;
-grant select, insert, update, delete on users to captain;
-
-
-
-

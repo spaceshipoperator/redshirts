@@ -57,3 +57,27 @@ exports.activityEdit = function(req, res){
 exports.activityComment = function(req, res){
     res.render("activityComment", { title: "New Comment!", activity: req.session.activity, error: req.flash("error"), info: req.flash("info") })
 };
+
+exports.recoverPassword = function(req, res){
+    res.render("recoverPassword", { title: "Recover Password!", host: req.headers.host })
+};
+
+exports.passwordRecoverySent = function(req, res){
+    res.render("passwordRecoverySent", { title: "Password Recovery Sent!" })
+};
+
+exports.emailNotFound = function(req, res){
+    res.render("emailNotFound", { title: "Email Address Not Found!" })
+};
+
+exports.resetPassword = function(req, res){
+    res.render("resetPassword", { title: "Reset Your Password!", email_address: req.email_address })
+};
+
+exports.resetSuccessful = function(req, res){
+    res.render("resetSuccessful", { title: "Password Reset Successful!" })
+};
+
+exports.resetFailed = function(req, res){
+    res.render("resetFailed", { title: "Password Reset Failed!" })
+};

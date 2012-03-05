@@ -104,6 +104,31 @@ app.post("/:userId/intern/:internId/activity/:activityId/comment", db.getUser, d
     res.redirect("/" + req.session.user.id + "/intern/" + req.params["internId"] + "/activity/" + req.params["activityId"]);
 });
 
+app.get("/recover_password", routes.recoverPassword);
+app.post("/recover_password", db.sendPasswordResetEmail, function(req, res) {
+    if (req.emailFound) {
+        routes.passwordRecoverySent(req, res);
+    } else {
+        routes.accountNotFound(req, res);
+    };
+});
+
+app.get("/reset_password/:recoveryHash", db.getPasswordRecovery, function(req, res) {
+    if (req.email_address) {
+        routes.resetPassword(req, res);
+    } else {
+        routes.accountNotFound(req, res);
+    };
+});
+
+app.post("/reset_password/:recoveryHash", db.resetPassword, function(req, res) {
+    if (req.resetSuccessful) {
+        routes.resetSuccessful(req, res);
+    } else {
+        routes.resetFailed(req, res);
+    };
+});
+
 //setInterval(function(){
 //    db.checkSendReminders();
 //},1000);

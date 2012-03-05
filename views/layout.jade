@@ -2,35 +2,41 @@
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/smoothness/jquery-ui-1.8.18.custom.css')
-    link(rel='stylesheet', href='/stylesheets/sites.css')
-    script(src='/javascripts/jquery-1.7.1.js')
-    script(src='/javascripts/jquery-ui-1.8.18.custom.min.js')
-    script(src='/javascripts/jquery.validate.js')
+    link(rel="stylesheet", href='/stylesheets/smoothness/jquery-ui-1.8.18.custom.css')
+    link(rel="stylesheet", href='/stylesheets/sites.css')
+    script(src="/javascripts/jquery-1.7.1.js")
+    script(src="/javascripts/jquery-ui-1.8.18.custom.min.js")
+    script(src="/javascripts/jquery.validate.js")
     
   div#wrapper
     div#mainnav
       ul
-        li
-          a(href='/') Home
-        li
-          a(href='/faq') FAQ
-        li
-          a(href='/gettingstarted') Getting Started
         - if (user) 
           li
-            a(href='/logout') logout
+            a(href="#{user.id}/intern/list") Home
         - else
           li
-            a(href='/login') login
+            a(href="/") Home
+        li
+          a(href="/faq") FAQ
+        li
+          a(href="/gettingstarted") Getting Started
+        - if (user) 
           li
-            a(href='/register') register
+            a(href="/logout") Logout
+        - else
+          li
+            a(href="/login") Login
+          li
+            a(href="/register") Register
     p#logo
       img(alt="University of Washington Tacoma", src="/images/w-banner.png")
       img(class="small-uwt", alt="University of Washington Tacoma", src="/images/logo-uw-tacoma-small.png")
       a(href="http://www.tacoma.uw.edu/institute-technology/completing-internship", class="school-name", title="University of Washington Tacoma") Institute of Technology
     div#bottomheader
     div#main
+      - if (user) 
+        p(class="title", style="font-size: 18px;") welcome, #{user.first_name} #{user.last_name}!
       body!= body
     div#error
     br

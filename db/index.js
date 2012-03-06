@@ -226,6 +226,65 @@ var qUpdateUserPassword = ""
     + "where email_address = $2 "
     + "returning true ";
 
+var qGetUsersDueReminderOfActivity = ""
+    + "with reminders_due as ( "
+    + "select distinct "
+    + "u.id user_id, u.role, u.email_address, u.first_name, u.last_name, "
+    + "u.first_name || ' ' || u.last_name student_name, "
+    + "i.id internship_id, i.project_title, "
+    + "min(a.scheduled_on) activity_scheduled_on "
+    + "from activities a "
+    + "join internships i "
+    + "on a.internship_id = i.id "
+    + "join users u "
+    + "on i.student_user_id = u.id "
+    + "where i.status in ('ready', 'approved', 'in progress', 'activity due') "
+    + "and a.completed_on is null "
+    + "and a.scheduled_on < (current_date + 2) "
+    + "group by "
+    + "u.id, u.role, u.email_address, u.first_name, u.last_name, "
+    + "u.first_name || ' ' || u.last_name, "
+    + "i.id, i.project_title "
+    + "union "
+    + "select distinct "
+    + "f.id user_id, f.role, f.email_address, f.first_name, f.last_name, "
+    + "s.first_name || ' ' || s.last_name student_name, "
+    + "i.id internship_id, i.project_title, "
+    + "min(a.scheduled_on) activity_scheduled_on "
+    + "from activities a "
+    + "join internships i "
+    + "on a.internship_id = i.id "
+    + "join users s "
+    + "on i.student_user_id = s.id "
+    + "join participants p "
+    + "on i.id = p.internship_id "
+    + "join users f "
+    + "on p.user_id = f.id "
+    + "where i.status in ('ready', 'approved', 'in progress', 'activity due') "
+    + "and p.accepted_on is not null "
+    + "and a.completed_on is null "
+    + "and a.scheduled_on < (current_date + 2) "
+    + "and f.role = 'advisor' "
+    + "group by "
+    + "f.id, f.role, f.email_address, f.first_name, f.last_name, "
+    + "s.first_name || ' ' || s.last_name, "
+    + "i.id, i.project_title ) "
+    + "select d.user_id, d.role, d.email_address, "
+    + "d.first_name, d.last_name, d.student_name, "
+    + "d.internship_id, d.project_title,  "
+    + "to_char(d.activity_scheduled_on, 'yyyy-mm-dd') activity_scheduled_on "
+    + "from reminders_due d "
+    + "left join reminders_sent s "
+    + "on d.user_id = s.user_id "
+    + "and d.internship_id = s.internship_id "
+    + "and d.activity_scheduled_on = s.activity_scheduled_on "
+    + "where s.id is null ";
+
+var qInsertReminderSent = ""
+    + "insert into reminders_sent " 
+    + "(user_id, internship_id, activity_scheduled_on) " 
+    + "values ($1, $2, to_date($3, 'yyyy-mm-dd')) ";
+
 // lil helpers
 // from http://stackoverflow.com/questions/2280104/convert-javascript-to-date-object-to-mysql-date-format-yyyy-mm-dd
 // all this to get a sanely formatted date string...yeesh
@@ -424,7 +483,11 @@ var sendEmail = function(req, res, next) {
     nodemailer.sendMail(mailOptions, function(error){
         if(error){
             console.log(error);
-            req.flash("error", "participant request saved to database, but failed to send email!");
+            if (req.flash) {
+                req.flash("error", "failed to send email!");
+            } else {
+                console.log("no flashy, flash!");
+            };
         } else {
             console.log("email sent!");
         };
@@ -793,14 +856,15 @@ exports.acceptParticipant = function(req, res, next) {
 exports.createActivity = function(req, rex, next) {
     var d = req.body.activityNew;
     var i = req.session.internship;
-
+    d.internship_id = i.id;
     var a = [
-        i["id"],
+        d["internship_id"],
         d["description"],
         d["scheduled_on"] ];
 
     client.query(qInsertActivity, a, function(err, result) {
         req.flash("info", "activity added!");
+        checkSetInternshipStatus(d);
         next();
     });
 };
@@ -926,8 +990,6 @@ exports.getPasswordRecovery = function(req, res, next) {
         if (err) { console.log(err) };
         if (result.rows.length > 0) {
             req.email_address = result.rows[0].email_address;
-            console.log("foo!");
-            console.log(req.email_address);
             next();
         } else {
             next();
@@ -957,8 +1019,65 @@ exports.resetPassword = function(req, res, next) {
 };
 
 exports.checkSendReminders = function() {
-    // get all active internships from db
-    // send email to advisor and student
-    // about inter
-    console.log("aaarrhhhggg");
+    // get students and (accepted) advisors associated with active internships
+    // which have scheduled activities within the next couple days
+    // but have not been completed  
+    client.query(qGetUsersDueReminderOfActivity, function(err, result) {
+        if (err) { console.log(err) };
+        if (result.rows.length > 0) {
+            for (var i = 0; i < result.rows.length; i++) {
+                var u = result.rows[i];
+                var r = process.env.EMAIL_RECEIVER || u.email_address;
+
+                if (u.role == "student") {
+                    var s = "upcoming activity due for your internship!"; 
+                    var m = "Greetings <b>" + u.first_name + "</b>, "
+                        + "<p><p> "
+                        + "This is just a friendly reminder that you have an upcoming activity due "
+                        + "<br/>"
+                        + "scheduled for <b>" + u.activity_scheduled_on + "</b>"
+                        + "<br/>"
+                        + "toward the completion of your internship project titled: <b>" + u.project_title + "</b>"
+                        + "<p><p> "
+                        + "Please visit: http://www.redshirts.toopointoh.org to login and have a look! ";
+                    
+                } else if (u.role == "advisor") {
+                    var s = "upcoming activity due for " + u.student_name + "'s internship!"; 
+                    var m = "Greetings Mr. or Ms. <b>" + u.last_name + "</b>, "
+                        + "<p><p> "
+                        + "This is just a friendly reminder that you have an upcoming activity due "
+                        + "<br/>"
+                        + "scheduled for <b>" + u.activity_scheduled_on + "</b>"
+                        + "<br/>"
+                        + "toward the completion of " + u.student_name + "'s internship project titled: <b>" + u.project_title + "</b>"
+                        + "<p><p> "
+                        + "Please visit: http://www.redshirts.toopointoh.org to login and have a look! ";
+                };
+
+                var a = [
+                    u.user_id,
+                    u.internship_id,
+                    u.activity_scheduled_on ];
+  
+                // hacky little thing in order to avoid refactoring sendEmail right now
+                var req = {};
+                var res = {};
+                req.email = [r, s, m];
+
+                sendEmail(req, res, function() {
+                    console.log("whoopee!!");
+                });
+                
+                client.query(qInsertReminderSent, a, function(err, result) {
+                   if (err) { console.log(err) };
+                   console.log("wheee!");
+                });
+            };
+            
+        } else {
+            // no work to do
+        }
+        
+    });
+    
 };

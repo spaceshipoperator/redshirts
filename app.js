@@ -130,9 +130,9 @@ app.post("/reset_password/:recoveryHash", db.resetPassword, function(req, res) {
     };
 });
 
-//setInterval(function(){
-//    db.checkSendReminders();
-//},1000);
+setInterval(function(){
+    db.checkSendReminders();
+},60000);
 
 app.listen(3003);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

@@ -58,13 +58,16 @@
    - [X] add clientside form validation for required fields and such
    - [X] clean up background and fonts
    - [X] password recovery..
-   - [ ] content baby (home, faq, getting started)
+   - [X] content baby (home, faq, getting started)
+   - [X] include hints based on status, ie if pending "request an advisor and a sponsor...", 
+   - [X] email reminders for upcoming scheduled activities
    - [ ] need to get message text included in participant request email, some sane defaults for activities too
-   - [ ] email reminders for upcoming scheduled activities
    - [ ] hash password clientside (and compare with confirmation) at registration
-   - [ ] require four scheduled activities before "ready"
+   - [ ] require four scheduled activities before "ready" (design decision?)
+   - [ ] use ajax to migrate multiple separate forms to single page (include request participant and activity create/edit/review within intern edit)
    - [ ] generate report (pdf?)
+   - [ ] refactor/reorganize code, modularize db/index.js, separate/consolidate clientside javascript from jade
+   - [ ] allow for program administrator to upload descriptions and contacts for available internships and student to select from "catalog"
    - [ ] consider text box for submitting "entry code" on approve
-   - [ ] include hints based on status, ie if pending "request an advisor and a sponsor...", 
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model..next release of app?)
 

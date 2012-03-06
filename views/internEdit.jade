@@ -161,7 +161,7 @@ div#internship
           textarea(name='editIntern[project_description]', disabled=checkDisabled, rows=10, cols=45)= internship.project_description
 
 div#participants
-  h3(class="title") participants <span id="toggleHelpParticipants", style="color:blue; text-decoration:underline; font-size:11px;">&#185;</span>
+  h3(class="title") participants <span id="toggleHelpParticipants", style="color:blue; text-decoration:underline; font-size:14px;">?</span>
   - if (!(checkDisabled))
     p
     a(href="/#{user.id}/intern/#{internship.id}/request") request\ participant
@@ -201,7 +201,7 @@ div#participants
     span In order to complete the internship process, you will need to have an industry <b>sponsor</b> as well as a faculty <b>advisor</b> agree to participate, use the "request participant" link (above), then fill out and submit the form and an email will be sent to your requested participant with a link that they can click to indicate their acceptance.  Once your sponsor and advisor have accepted, your internship will be "ready" for the program administrator to approve, then you can begin your employment.
 
 div#activities
-  h3(class="title") activities <span id="toggleHelpActivities", style="color:blue; text-decoration:underline; font-size:11px;">&#178;</span>
+  h3(class="title") activities <span id="toggleHelpActivities", style="color:blue; text-decoration:underline; font-size:14px;">?</span>
   - if (!(checkDisabled))
     a(href="/#{user.id}/intern/#{internship.id}/activity/new") new\ activity
   p

@@ -70,4 +70,13 @@
    - [ ] allow for program administrator to upload descriptions and contacts for available internships and student to select from "catalog"
    - [ ] consider text box for submitting "entry code" on approve
    - [ ] registration form should prolly have student number on it...rather than internship create (requires refactoring data model..next release of app?)
+   - [ ] allow "sponsor" to upload available positions
+   - [ ] allow "admin" to announce available positions, provide contact information
+   - [ ] allow student to browse/select from available positions and submit resume
+   - [ ] give the html/css some lovin' (replace tables with divs and better stylin')
+   - [ ] introduce chat (student can chat with any other online students, student can chat with assigned advisor/sponsor)
+   - [ ] admin is really advisor with superuser privs
+   - [ ] refactor check/set internship status to function within "next" chain
+     
+ 
 
